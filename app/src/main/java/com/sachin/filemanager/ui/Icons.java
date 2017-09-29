@@ -19,7 +19,6 @@ import android.support.v4.content.ContextCompat;
 
 import com.sachin.filemanager.FileManagerApplication;
 import com.sachin.filemanager.R;
-import com.sachin.filemanager.utils.FileUtils;
 import com.sachin.filemanager.utils.IconUtils;
 
 import java.io.File;
@@ -118,21 +117,6 @@ public class Icons {
 
     public static Bitmap getAPKIconBitmap(File file) {
         return ((BitmapDrawable) getAPKIcon(file)).getBitmap();
-    }
-
-    public static Bitmap getImagePreview(File file) {
-        if (imageIcons == null)
-            imageIcons = new HashMap<>();
-
-        Bitmap bitmap;
-
-        if (file != null && FileUtils.isImageFile(file)) {
-            bitmap = decodeSampleBitmapFromFile(file);
-            imageIcons.put(file.getPath(), new SoftReference<>(bitmap));
-            return bitmap;
-        }
-
-        return null;
     }
 
     public static Bitmap decodeSampleBitmapFromFile(File file) {

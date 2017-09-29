@@ -217,23 +217,27 @@ public class MainActivity extends BaseActivity implements KEYS,
     }
 
     private void setUpNavigationDrawer(Menu menu) {
+        MenuItem root = menu.findItem(R.id.nav_root);
         MenuItem primary = menu.findItem(R.id.nav_device);
         MenuItem sdCard = menu.findItem(R.id.nav_sd_card);
-        if (StorageUtils.getExtSdCardPaths(this) != null) {
-            if (!sdCard.isVisible())
+        try {
+            String extSdCard = StorageUtils.getExtSdCardPaths(this);
+            if (extSdCard != null)
                 sdCard.setVisible(true);
-        } else {
-            if (sdCard.isVisible())
+
+            else if (sdCard.isVisible())
                 sdCard.setVisible(false);
+
+            boolean sd = getHomeDirectory().equals(extSdCard);
+            sdCard.setChecked(sd);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        MenuItem root = menu.findItem(R.id.nav_root);
         boolean device = getHomeDirectory().equals(StorageUtils.getSdCardPath());
         primary.setChecked(device);
-        boolean sd = getHomeDirectory().equals(StorageUtils.getExtSdCardPaths(this));
-        sdCard.setChecked(sd);
-        root.setVisible(rootMode);
 
+        root.setVisible(getHomeDirectory().equals(StorageUtils.getRootPath()));
     }
 
     private int getViewType() {

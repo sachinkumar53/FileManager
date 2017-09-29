@@ -35,9 +35,6 @@
             android:name=".activities.SettingsActivity"
             android:label="@string/settings_label"
             android:parentActivityName=".activities.MainActivity" />
-        <activity
-            android:name=".AudioPlayblack"
-            android:theme="@android:style/Theme.Dialog" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

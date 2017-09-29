@@ -31,8 +31,9 @@ import java.util.List;
 
 
 public class MainActivityHelper implements View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener, KEYS {
-    private MainActivity mainActivity;
     public FileManager fileManager;
+    boolean fabOpened = false;
+    private MainActivity mainActivity;
     private RecyclerView recyclerView;
     private MainAdapter mainAdapter;
     private FileManagerUtils fileManagerUtils;
@@ -40,12 +41,9 @@ public class MainActivityHelper implements View.OnClickListener, SharedPreferenc
     private FloatingActionButton fab;
     private FloatingActionButton fab1;
     private FloatingActionButton fab2;
-
     private View fabContainer;
     private View fabLayout1;
     private View fabLayout2;
-    boolean fabOpened = false;
-
     private Animation rC;
     private Animation rAC;
     private Animation show;
@@ -102,15 +100,6 @@ public class MainActivityHelper implements View.OnClickListener, SharedPreferenc
         mainAdapter.stopThumbnailThread();
         mainAdapter.addAll(nextDir);
         mainAdapter.refresh();
-
-        /*if (SettingsUtils.isThumbnailEnabled()) {
-
-            for (int i = 0; i < nextDir.size(); i++) {
-                File file = new File(nextDir.get(i).getPath());
-                if (FileUtils.isAPKFile(file) || FileUtils.isImageFile(file))
-                    new IconLoader(mainAdapter.getItem(i), mainAdapter).execute(file);
-            }
-        }*/
 
         if (isFabOpened()) {
             hideFAB();

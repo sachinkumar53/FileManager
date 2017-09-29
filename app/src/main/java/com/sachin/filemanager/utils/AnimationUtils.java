@@ -29,7 +29,7 @@ public class AnimationUtils {
         final float endRadius = (float) Math.hypot(cx, cy);
 
         int x = (-cx + 100);
-        int y = 100;
+        int y = 75;
 
         fab.animate().translationX(x).translationY(y).setInterpolator(new AccelerateInterpolator()).
                 setListener(new Animator.AnimatorListener() {

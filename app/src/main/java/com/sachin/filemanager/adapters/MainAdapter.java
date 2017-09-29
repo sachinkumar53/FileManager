@@ -21,8 +21,9 @@ import com.sachin.filemanager.R;
 import com.sachin.filemanager.ui.FileItem;
 import com.sachin.filemanager.utils.FileManagerUtils;
 import com.sachin.filemanager.utils.FileUtils;
-import com.sachin.filemanager.utils.IconHelper;
+import com.sachin.filemanager.utils.IconLoader;
 import com.sachin.filemanager.utils.IconUtils;
+import com.sachin.filemanager.utils.SettingsUtils;
 import com.sachin.filemanager.view.SmoothCheckBox;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     private int lastPosition = -1;
     private boolean animation;
     private boolean checkAnim;
-    private IconHelper iconHelper;
+    private IconLoader iconLoader;
 
     public MainAdapter(Context context) {
         c = context;
@@ -93,21 +94,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         this.animation = animation;
     }
 
-    public void setMultiSelectEnabled(boolean multiSelectEnabled) {
-        if (selectedItems == null)
-            selectedItems = new HashMap<>();
-
-        this.multiSelectEnabled = multiSelectEnabled;
-
-        if (!multiSelectEnabled) {
-            if (!selectedItems.isEmpty())
-                selectedItems.clear();
-        }
-        checkAnim = false;
-        notifyDataSetChanged();
-    }
-
-
     public void selectItem(int position) {
         //check if already selected
         if (selectedItems.containsKey(position)) {
@@ -143,7 +129,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         return selectedItems.size();
     }
 
-
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final FileItem item = getItem(position);
@@ -152,28 +137,32 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         holder.itemDetail.setText(item.getSize());
 
         if (item.isFile()) {
-            if (iconHelper == null)
-                iconHelper = new IconHelper(48, 48, false);
+            if (SettingsUtils.isThumbnailEnabled()) {
+                if (iconLoader == null)
+                    iconLoader = new IconLoader(48, 48, false);
 
-            if (FileUtils.isImageFile(item.getBaseFile()) || FileUtils.isAPKFile(item.getBaseFile())) {
-                Bitmap bitmap = iconHelper.hasBitmapCached(item.getPath());
-                if (bitmap == null) {
-                    Handler handler = new Handler(new Handler.Callback() {
-                        @Override
-                        public boolean handleMessage(Message msg) {
-                            notifyDataSetChanged();
-                            return true;
-                        }
-                    });
+                if (FileUtils.isImageFile(item.getBaseFile()) || FileUtils.isAPKFile(item.getBaseFile())) {
+                    Bitmap bitmap = iconLoader.hasBitmapCached(item.getPath());
+                    if (bitmap == null) {
+                        Handler handler = new Handler(new Handler.Callback() {
+                            @Override
+                            public boolean handleMessage(Message msg) {
+                                notifyDataSetChanged();
+                                return true;
+                            }
+                        });
 
-                    iconHelper.createNewThumbnail(fileItemList, handler);
+                        iconLoader.createNewThumbnail(fileItemList, handler);
 
-                    if (!iconHelper.isAlive())
-                        iconHelper.start();
+                        if (!iconLoader.isAlive())
+                            iconLoader.start();
+                    } else
+                        holder.itemIcon.setImageBitmap(bitmap);
                 } else
-                    holder.itemIcon.setImageBitmap(bitmap);
-            }else
+                    holder.itemIcon.setImageBitmap(item.getIcon());
+            } else {
                 holder.itemIcon.setImageBitmap(item.getIcon());
+            }
 
         } else {
             Drawable drawable = ContextCompat.getDrawable(c, R.drawable.icon_folder);
@@ -202,19 +191,11 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     }
 
     public void stopThumbnailThread() {
-        if (iconHelper != null) {
-            iconHelper.setCancelThumbnails(true);
-            iconHelper = null;
+        if (iconLoader != null) {
+            iconLoader.setCancelThumbnails(true);
+            iconLoader = null;
         }
     }
-
-    public int indexOfItem(FileItem item) {
-        if (fileItemList.isEmpty())
-            return 0;
-
-        return fileItemList.indexOf(item);
-    }
-
 
     @Override
     public void onViewDetachedFromWindow(ViewHolder holder) {
@@ -234,7 +215,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
-
     public int getViewType() {
         return type;
     }
@@ -248,6 +228,73 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         return fileItemList.size();
     }
 
+    public FileItem getItem(int position) {
+        if (fileItemList.isEmpty())
+            return null;
+
+        return fileItemList.get(position);
+    }
+
+    public void removeItem(int position) {
+        if (!fileItemList.isEmpty()) {
+            fileItemList.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+
+    public List<FileItem> getFileList() {
+        return fileItemList;
+    }
+
+    public boolean isMultiSelectEnabled() {
+        return multiSelectEnabled;
+    }
+
+    public void setMultiSelectEnabled(boolean multiSelectEnabled) {
+        if (selectedItems == null)
+            selectedItems = new HashMap<>();
+
+        this.multiSelectEnabled = multiSelectEnabled;
+
+        if (!multiSelectEnabled) {
+            if (!selectedItems.isEmpty())
+                selectedItems.clear();
+        }
+        checkAnim = false;
+        notifyDataSetChanged();
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.itemClickListener = onItemClickListener;
+    }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
+        this.onItemLongClickListener = onItemLongClickListener;
+    }
+
+    public void setOnOptionItemClickListener(OnOptionItemClickListener onOptionItemClickListener) {
+        this.onOptionItemClickListener = onOptionItemClickListener;
+    }
+
+    public void setOnSelectionChanged(OnSelectionChanged onSelectionChanged) {
+        this.onSelectionChanged = onSelectionChanged;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    public interface OnItemLongClickListener {
+        boolean onItemLongClick(View view, int position);
+    }
+
+    public interface OnOptionItemClickListener {
+        boolean onOptionItemClick(MenuItem menuItem, int position);
+    }
+
+    public interface OnSelectionChanged {
+        void selection(int count);
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView itemName;
@@ -300,59 +347,5 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             });
 
         }
-    }
-
-    public FileItem getItem(int position) {
-        if (fileItemList.isEmpty())
-            return null;
-
-        return fileItemList.get(position);
-    }
-
-    public void removeItem(int position) {
-        if (!fileItemList.isEmpty()) {
-            fileItemList.remove(position);
-            notifyItemRemoved(position);
-        }
-    }
-
-    public List<FileItem> getFileList() {
-        return fileItemList;
-    }
-
-    public boolean isMultiSelectEnabled() {
-        return multiSelectEnabled;
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.itemClickListener = onItemClickListener;
-    }
-
-    public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
-        this.onItemLongClickListener = onItemLongClickListener;
-    }
-
-    public void setOnOptionItemClickListener(OnOptionItemClickListener onOptionItemClickListener) {
-        this.onOptionItemClickListener = onOptionItemClickListener;
-    }
-
-    public void setOnSelectionChanged(OnSelectionChanged onSelectionChanged) {
-        this.onSelectionChanged = onSelectionChanged;
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(View view, int position);
-    }
-
-    public interface OnItemLongClickListener {
-        boolean onItemLongClick(View view, int position);
-    }
-
-    public interface OnOptionItemClickListener {
-        boolean onOptionItemClick(MenuItem menuItem, int position);
-    }
-
-    public interface OnSelectionChanged {
-        void selection(int count);
     }
 }

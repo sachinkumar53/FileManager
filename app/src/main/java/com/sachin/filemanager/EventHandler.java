@@ -1,28 +1,27 @@
 package com.sachin.filemanager;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import android.app.ProgressDialog;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Message;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sachin.filemanager.activities.FileListActivity;
-import com.sachin.filemanager.utils.*;
+import com.sachin.filemanager.utils.FileUtils;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class EventHandler implements View.OnClickListener {
 
@@ -35,7 +34,7 @@ public class EventHandler implements View.OnClickListener {
 	
 	private final Context mContext;
 	private final FileManager mFileMang;
-	private IconHelper mThumbnail;
+	//private IconHelper mThumbnail;
 	//private ApkIconCreator apkIcon;
 	private FileItemAdapter mDelegate;
 	
@@ -193,10 +192,12 @@ public class EventHandler implements View.OnClickListener {
 	 * we leave the folder the image files are in.
 	 */
 	public void stopThumbnailThread() {
+/*
 		if (mThumbnail != null) {
 			mThumbnail.setCancelThumbnails(true);
 			mThumbnail = null;
 		}
+*/
 	}
 
 	/*public void stopApkIconThread() {
@@ -428,10 +429,10 @@ public class EventHandler implements View.OnClickListener {
     		else
     			mViewHolder.mSelect.setChecked(false);
 
-    		
-    		if(mThumbnail == null)
+    		/*
+			if(mThumbnail == null)
     			mThumbnail = new IconHelper(52, 52,false);
-
+*/
 		/*	if (apkIcon == null){
 				apkIcon = new ApkIconCreator(mContext);
 			}
@@ -458,9 +459,9 @@ public class EventHandler implements View.OnClickListener {
 
 							//mThumbnail.createNewThumbnail(mDataSource, mFileMang.getCurrentDir(), handle);
 
-							if (!mThumbnail.isAlive())
+			/*				if (!mThumbnail.isAlive())
 								mThumbnail.start();
-
+*/
 						} else {
 							mViewHolder.icon.setImageBitmap(thumb);
 						}
