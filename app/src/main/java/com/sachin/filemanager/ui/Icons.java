@@ -7,8 +7,11 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -22,8 +25,6 @@ import com.sachin.filemanager.R;
 import com.sachin.filemanager.utils.IconUtils;
 
 import java.io.File;
-import java.lang.ref.SoftReference;
-import java.util.HashMap;
 
 import static com.sachin.filemanager.utils.FileUtils.TYPE_APK;
 import static com.sachin.filemanager.utils.FileUtils.TYPE_ARCHIVE;
@@ -44,57 +45,45 @@ import static com.sachin.filemanager.utils.FileUtils.identify;
 public class Icons {
     private static final int iconSizeCircle = 36;
     private static final int iconSizeMain = 24;
-    private static HashMap<String, SoftReference<Drawable>> apkIcons;
-    private static HashMap<String, SoftReference<Bitmap>> imageIcons;
-
-    public static Bitmap getIcon(File file) {
-
-        return getCircle(file);
-    }
+    private static final Context context = FileManagerApplication.getAppContext();
 
     public static void destroyIconCache() {
 
     }
 
-
-    private static Bitmap getCircle(File file) {
+    public static Bitmap getIcon(File file) {
         Paint paint = new Paint();
-        Bitmap bitmap = Bitmap.createBitmap(iconSizeCircle, iconSizeCircle, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        int accentColor = IconUtils.getAccentColor();
-        paint.setColor(accentColor);
+        int circleSize = IconUtils.dpToPx(iconSizeCircle);
+        int mainSize = IconUtils.dpToPx(iconSizeMain);
+
+        Bitmap circle = Bitmap.createBitmap(circleSize,circleSize, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(circle);
+
+        paint.setColor(IconUtils.getAccentColor());
         paint.setAntiAlias(true);
-        paint.setStyle(Paint.Style.FILL);
-        RectF rectF = new RectF(0, 0, iconSizeCircle, iconSizeCircle);
+
+        RectF rectF = new RectF(new Rect(0, 0, circleSize, circleSize));
+
         canvas.drawOval(rectF, paint);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
 
-        Bitmap layer = BitmapFactory.decodeResource(FileManagerApplication.getAppContext().getResources(),
-                getIconResId(file));
+        Bitmap icon = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),
+                getIconResId(file)),mainSize,mainSize,true);
 
-        Bitmap icon = Bitmap.createScaledBitmap(layer, iconSizeMain, iconSizeMain, false);
-        canvas.drawARGB(0, 0, 0, 0);
+        ColorFilter colorFilter = new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        paint.setColorFilter(colorFilter);
 
-        int mini = (iconSizeCircle - icon.getWidth()) / 2;
+        int mini = (circle.getWidth() - icon.getWidth()) / 2;
+
         canvas.drawBitmap(icon, mini, mini, paint);
-
-        return bitmap;
+        return circle;
     }
 
     public static Drawable getAPKIcon(File apkFile) {
-        if (apkIcons == null)
-            apkIcons = new HashMap<>();
-        String key = apkFile.toString();
-
-        if (!apkIcons.isEmpty() && apkIcons.containsValue(key))
-            return apkIcons.get(key).get();
-
-        Context mContext = FileManagerApplication.getAppContext();
         Drawable appIcon = null;
         File file = apkFile;
         String sourcePath = file.getPath();
         if (sourcePath.endsWith(".apk")) {
-            PackageInfo packageInfo = mContext.getPackageManager()
+            PackageInfo packageInfo = context.getPackageManager()
                     .getPackageArchiveInfo(sourcePath, PackageManager.GET_ACTIVITIES);
             if (packageInfo != null) {
                 ApplicationInfo appInfo = packageInfo.applicationInfo;
@@ -102,15 +91,13 @@ public class Icons {
                     appInfo.sourceDir = sourcePath;
                     appInfo.publicSourceDir = sourcePath;
                 }
-                Drawable icon = appInfo.loadIcon(mContext.getPackageManager());
+                Drawable icon = appInfo.loadIcon(context.getPackageManager());
                 appIcon = icon;
             }
         }
 
         if (appIcon == null)
-            appIcon = ContextCompat.getDrawable(mContext, android.R.drawable.sym_def_app_icon);
-
-        apkIcons.put(key, new SoftReference<>(appIcon));
+            appIcon = ContextCompat.getDrawable(context, android.R.drawable.sym_def_app_icon);
 
         return appIcon;
     }
