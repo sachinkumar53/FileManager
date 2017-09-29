@@ -17,7 +17,9 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 
 import com.sachin.filemanager.FileManagerApplication;
@@ -47,16 +49,27 @@ public class Icons {
     private static final int iconSizeMain = 24;
     private static final Context context = FileManagerApplication.getAppContext();
 
-    public static void destroyIconCache() {
+    public static Bitmap getFolderIcon() {
+        int size = IconUtils.dpToPx(iconSizeCircle);
+        Paint paint = new Paint();
+        Bitmap bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),
+                R.drawable.icon_folder), size, size, true);
 
+        ColorFilter colorFilter = new PorterDuffColorFilter(IconUtils.getAccentColor(), PorterDuff.Mode.SRC_IN);
+        paint.setColorFilter(colorFilter);
+
+        Canvas canvas = new Canvas();
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+
+        return bitmap;
     }
 
-    public static Bitmap getIcon(File file) {
+    public static Bitmap getFileIcon(File file) {
         Paint paint = new Paint();
         int circleSize = IconUtils.dpToPx(iconSizeCircle);
         int mainSize = IconUtils.dpToPx(iconSizeMain);
 
-        Bitmap circle = Bitmap.createBitmap(circleSize,circleSize, Bitmap.Config.ARGB_8888);
+        Bitmap circle = Bitmap.createBitmap(circleSize, circleSize, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(circle);
 
         paint.setColor(IconUtils.getAccentColor());
@@ -67,7 +80,7 @@ public class Icons {
         canvas.drawOval(rectF, paint);
 
         Bitmap icon = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),
-                getIconResId(file)),mainSize,mainSize,true);
+                getIconResId(file)), mainSize, mainSize, true);
 
         ColorFilter colorFilter = new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
         paint.setColorFilter(colorFilter);
@@ -185,6 +198,18 @@ public class Icons {
         }
 
         return R.drawable.ic_file_type_null;
+    }
+
+    private Bitmap getVideoDrawable(String path) throws OutOfMemoryError {
+
+        try {
+            Bitmap thumb = ThumbnailUtils.createVideoThumbnail(path,
+                    MediaStore.Images.Thumbnails.MINI_KIND);
+            return thumb;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

@@ -2,11 +2,8 @@ package com.sachin.filemanager.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,10 +16,10 @@ import android.widget.TextView;
 
 import com.sachin.filemanager.R;
 import com.sachin.filemanager.ui.FileItem;
+import com.sachin.filemanager.ui.Icons;
 import com.sachin.filemanager.utils.FileManagerUtils;
 import com.sachin.filemanager.utils.FileUtils;
 import com.sachin.filemanager.utils.IconLoader;
-import com.sachin.filemanager.utils.IconUtils;
 import com.sachin.filemanager.utils.SettingsUtils;
 import com.sachin.filemanager.view.SmoothCheckBox;
 
@@ -33,11 +30,11 @@ import java.util.List;
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     public static final int LIST_VIEW = 0;
     public static final int GRID_VIEW = 1;
+    private Context c;
+
     private int type;
     private List<FileItem> fileItemList;
-
     private HashMap<Integer, String> selectedItems;
-    private Context c;
     private OnItemClickListener itemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
     private boolean multiSelectEnabled;
@@ -49,8 +46,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     private boolean checkAnim;
     private IconLoader iconLoader;
 
-    public MainAdapter(Context context) {
-        c = context;
+    public MainAdapter(Context c) {
+        this.c = c;
         fileItemList = new ArrayList<>();
         fileManagerUtils = FileManagerUtils.getInstance();
         this.animation = true;
@@ -137,12 +134,15 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         holder.itemDetail.setText(item.getSize());
 
         if (item.isFile()) {
+
             if (SettingsUtils.isThumbnailEnabled()) {
                 if (iconLoader == null)
-                    iconLoader = new IconLoader(48, 48, false);
+                    iconLoader = new IconLoader();
 
                 if (FileUtils.isImageFile(item.getBaseFile()) || FileUtils.isAPKFile(item.getBaseFile())) {
-                    Bitmap bitmap = iconLoader.hasBitmapCached(item.getPath());
+
+                    Bitmap bitmap = iconLoader.hasLoadedCache(item.getPath());
+
                     if (bitmap == null) {
                         Handler handler = new Handler(new Handler.Callback() {
                             @Override
@@ -152,23 +152,20 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
                             }
                         });
 
-                        iconLoader.createNewThumbnail(fileItemList, handler);
-
+                        iconLoader.loadIcon(fileItemList, handler);
                         if (!iconLoader.isAlive())
                             iconLoader.start();
+
                     } else
                         holder.itemIcon.setImageBitmap(bitmap);
+
                 } else
                     holder.itemIcon.setImageBitmap(item.getIcon());
-            } else {
-                holder.itemIcon.setImageBitmap(item.getIcon());
-            }
+            } else
+                holder.itemIcon.setImageBitmap(Icons.getFileIcon(item.getBaseFile()));
 
-        } else {
-            Drawable drawable = ContextCompat.getDrawable(c, R.drawable.icon_folder);
-            DrawableCompat.setTint(drawable, IconUtils.getAccentColor());
-            holder.itemIcon.setImageDrawable(drawable);
-        }
+        } else
+            holder.itemIcon.setImageBitmap(Icons.getFolderIcon());
 
         if (isMultiSelectEnabled())
             holder.checkBox.setVisibility(View.VISIBLE);
@@ -192,7 +189,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     public void stopThumbnailThread() {
         if (iconLoader != null) {
-            iconLoader.setCancelThumbnails(true);
+            iconLoader.cancelLoading(true);
             iconLoader = null;
         }
     }

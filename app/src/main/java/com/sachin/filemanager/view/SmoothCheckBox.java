@@ -39,8 +39,8 @@ import com.sachin.filemanager.utils.IconUtils;
 public class SmoothCheckBox extends View implements Checkable {
     private static final String KEY_INSTANCE_STATE = "InstanceState";
 
-    private static final int COLOR_TICK = Color.WHITE;
-    private static final int COLOR_UNCHECKED = Color.WHITE;
+    private static final int COLOR_TICK = Color.TRANSPARENT;
+    private static final int COLOR_UNCHECKED = Color.TRANSPARENT;
     private static final int COLOR_CHECKED = Color.BLACK;
     private static final int COLOR_FLOOR_UNCHECKED = Color.GRAY;
 
@@ -79,6 +79,24 @@ public class SmoothCheckBox extends View implements Checkable {
     public SmoothCheckBox(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(attrs);
+    }
+
+    private static int getGradientColor(int startColor, int endColor, float percent) {
+        int startA = Color.alpha(startColor);
+        int startR = Color.red(startColor);
+        int startG = Color.green(startColor);
+        int startB = Color.blue(startColor);
+
+        int endA = Color.alpha(endColor);
+        int endR = Color.red(endColor);
+        int endG = Color.green(endColor);
+        int endB = Color.blue(endColor);
+
+        int currentA = (int) (startA * (1 - percent) + endA * percent);
+        int currentR = (int) (startR * (1 - percent) + endR * percent);
+        int currentG = (int) (startG * (1 - percent) + endG * percent);
+        int currentB = (int) (startB * (1 - percent) + endB * percent);
+        return Color.argb(currentA, currentR, currentG, currentB);
     }
 
     private void init(AttributeSet attrs) {
@@ -154,11 +172,6 @@ public class SmoothCheckBox extends View implements Checkable {
     }
 
     @Override
-    public void toggle() {
-        this.setChecked(!isChecked());
-    }
-
-    @Override
     public void setChecked(boolean checked) {
         mChecked = checked;
         reset();
@@ -166,6 +179,11 @@ public class SmoothCheckBox extends View implements Checkable {
         if (mListener != null) {
             mListener.onCheckedChanged(SmoothCheckBox.this, mChecked);
         }
+    }
+
+    @Override
+    public void toggle() {
+        this.setChecked(!isChecked());
     }
 
     /**
@@ -390,24 +408,6 @@ public class SmoothCheckBox extends View implements Checkable {
                 postInvalidate();
             }
         }, mAnimDuration);
-    }
-
-    private static int getGradientColor(int startColor, int endColor, float percent) {
-        int startA = Color.alpha(startColor);
-        int startR = Color.red(startColor);
-        int startG = Color.green(startColor);
-        int startB = Color.blue(startColor);
-
-        int endA = Color.alpha(endColor);
-        int endR = Color.red(endColor);
-        int endG = Color.green(endColor);
-        int endB = Color.blue(endColor);
-
-        int currentA = (int) (startA * (1 - percent) + endA * percent);
-        int currentR = (int) (startR * (1 - percent) + endR * percent);
-        int currentG = (int) (startG * (1 - percent) + endG * percent);
-        int currentB = (int) (startB * (1 - percent) + endB * percent);
-        return Color.argb(currentA, currentR, currentG, currentB);
     }
 
     public void setOnCheckedChangeListener(OnCheckedChangeListener l) {

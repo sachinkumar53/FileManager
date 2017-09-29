@@ -16,10 +16,8 @@ import com.sachin.filemanager.R;
 import com.sachin.filemanager.adapters.ColorGridAdapter;
 import com.sachin.filemanager.adapters.ThemePagerAdapter;
 import com.sachin.filemanager.constants.ThemeColor;
-import com.sachin.filemanager.ui.Icons;
 import com.sachin.filemanager.ui.Theme;
 import com.sachin.filemanager.ui.ThemeUtils;
-import com.sachin.filemanager.utils.IconUtils;
 
 public class ThemeChooserDialog extends DialogFragment implements DialogInterface.OnClickListener,
         RadioGroup.OnCheckedChangeListener,ColorGridAdapter.OnItemClickListener {
@@ -75,7 +73,6 @@ public class ThemeChooserDialog extends DialogFragment implements DialogInterfac
         if (which == AlertDialog.BUTTON_POSITIVE) {
             themeUtils.generateThemeString();
             themeUtils.applyChanges();
-            Icons.destroyIconCache();
             getActivity().recreate();
             dismiss();
         } else

@@ -31,6 +31,7 @@ import android.view.View;
 import com.sachin.filemanager.R;
 import com.sachin.filemanager.adapters.MainAdapter;
 import com.sachin.filemanager.constants.KEYS;
+import com.sachin.filemanager.fragments.DetailsDialogFragment;
 import com.sachin.filemanager.fragments.MainDialogFragment;
 import com.sachin.filemanager.ui.DragSelectTouchListener;
 import com.sachin.filemanager.ui.FileItem;
@@ -455,9 +456,8 @@ public class MainActivity extends BaseActivity implements KEYS,
                     return false;
 
             case R.id.fom_details:
-                MainDialogFragment dialogFragment = MainDialogFragment.newInstance(MainDialogFragment.FILE_DETAILS_DIALOG);
-                dialogFragment.setFile(file);
-                helper.showDialog(dialogFragment);
+                DetailsDialogFragment dialogFragment = DetailsDialogFragment.newInstance(file.getPath());
+                dialogFragment.show(getSupportFragmentManager(),"tag");
                 return true;
         }
         return false;

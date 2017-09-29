@@ -32,6 +32,7 @@ import java.util.List;
 
 public class MainActivityHelper implements View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener, KEYS {
     public FileManager fileManager;
+public void stopIconLoading
     boolean fabOpened = false;
     private MainActivity mainActivity;
     private RecyclerView recyclerView;
@@ -48,6 +49,11 @@ public class MainActivityHelper implements View.OnClickListener, SharedPreferenc
     private Animation rAC;
     private Animation show;
     private Animation hide;
+    private IconLoader iconLoader;
+
+{
+
+    }
 
     public MainActivityHelper(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -95,8 +101,7 @@ public class MainActivityHelper implements View.OnClickListener, SharedPreferenc
         recyclerView.addOnScrollListener(new HideShowScrollListener(fab));
     }
 
-
-    public void updateDirectory(List<FileItem> nextDir) {
+        public void updateDirectory(List<FileItem> nextDir) {
         mainAdapter.stopThumbnailThread();
         mainAdapter.addAll(nextDir);
         mainAdapter.refresh();
@@ -105,9 +110,22 @@ public class MainActivityHelper implements View.OnClickListener, SharedPreferenc
             hideFAB();
         }
     }
+    public void startIconLoading(List<FileItem> itemList){
+        if (iconLoader == null)
+            iconLoader = new IconLoader();
+
+        for (FileItem item:itemList){
+            if (item.isFile()){
+                if (iconLoader.hasLoadedCache(item.getPath()) == null){
+
+                    iconLoader.loadIcon(itemList,);
+                }
+            }
+        }
+    }
 
     public void showDialog(MainDialogFragment dialogFragment) {
-        dialogFragment.show(mainActivity.getSupportFragmentManager(), "null");
+        dialogFragment.show(mainActivity.getSupportFragmentManager(), "tag");
     }
 
     public void switchLayout(int viewType) {

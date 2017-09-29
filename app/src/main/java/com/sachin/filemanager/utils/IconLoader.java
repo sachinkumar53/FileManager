@@ -10,34 +10,50 @@ import com.sachin.filemanager.ui.Icons;
 import java.io.File;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class IconLoader extends Thread {
+    private static final int MAX_CACHE = 500;
+
     private static HashMap<String, Bitmap> mCacheMap = null;
-    private int mWidth;
-    private int mHeight;
-    private SoftReference<Bitmap> mThumb;
+    private SoftReference<Bitmap> mIcon;
     private List<FileItem> mFileItems;
     private Handler mHandler;
     private boolean mStop = false;
 
-    public IconLoader(int width, int height, boolean useThumbs) {
-        mHeight = height;
-        mWidth = width;
+    // Make icon size large for gridview
+    //private boolean useThumbs;
 
+    public IconLoader() {
         if (mCacheMap == null)
-            mCacheMap = new HashMap<>();
+            mCacheMap = new LinkedHashMap<String, Bitmap>(MAX_CACHE, .75F, true) {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<String, Bitmap> eldest) {
+                    return size() > MAX_CACHE;
+                }
+            };
     }
 
-    public Bitmap hasBitmapCached(String key) {
+    public void clearCache() {
+        if (!mCacheMap.isEmpty())
+            mCacheMap.clear();
+
+        mCacheMap = null;
+    }
+
+    public Bitmap hasLoadedCache(String key) {
         return mCacheMap.get(key);
     }
 
-    public void setCancelThumbnails(boolean stop) {
+    public void cancelLoading(boolean stop) {
         mStop = stop;
     }
 
-    public void createNewThumbnail(List<FileItem> fileItems, Handler handler) {
+    public void loadIcon(List<FileItem> fileItems, Handler handler) {
         this.mFileItems = fileItems;
         this.mHandler = handler;
     }
@@ -59,29 +75,43 @@ public class IconLoader extends Thread {
             Bitmap bitmap;
 
             if (file.isFile()) {
-                if (isImageFile(file)) {
-                    bitmap = Icons.decodeSampleBitmapFromFile(file);
-                    mThumb = new SoftReference<>(bitmap);
-                    fileItem.setIcon(mThumb.get());
-                    mCacheMap.put(file.getPath(), mThumb.get());
+
+                //Check if already has been cached
+                if (hasLoadedCache(file.getPath()) != null) {
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             Message msg = mHandler.obtainMessage();
-                            msg.obj = mThumb.get();
+                            msg.what =
+                            msg.sendToTarget();
+                        }
+                    });
+                    return;
+                }
+
+                if (isImageFile(file)) {
+                    bitmap = Icons.decodeSampleBitmapFromFile(file);
+                    mIcon = new SoftReference<>(bitmap);
+                    fileItem.setIcon(mIcon.get());
+                    mCacheMap.put(file.getPath(), mIcon.get());
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Message msg = mHandler.obtainMessage();
+                            msg.obj = mIcon.get();
                             msg.sendToTarget();
                         }
                     });
                 } else if (isApkFile(file)) {
                     bitmap = Icons.getAPKIconBitmap(file);
-                    mThumb = new SoftReference<>(bitmap);
-                    fileItem.setIcon(mThumb.get());
-                    mCacheMap.put(file.getPath(), mThumb.get());
+                    mIcon = new SoftReference<>(bitmap);
+                    fileItem.setIcon(mIcon.get());
+                    mCacheMap.put(file.getPath(), mIcon.get());
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             Message msg = mHandler.obtainMessage();
-                            msg.obj = mThumb.get();
+                            msg.obj = mIcon.get();
                             msg.sendToTarget();
                         }
                     });
