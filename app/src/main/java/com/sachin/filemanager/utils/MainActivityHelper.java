@@ -231,10 +231,12 @@ public class MainActivityHelper implements View.OnClickListener, SharedPreferenc
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     }
 
-    public void updateSortSettings(int sortType) {
+    public void updateSortSettings(int sortType,int ascending) {
         fileManagerUtils.setSortType(sortType);
+        fileManagerUtils.setAscending(ascending);
         updateDirectory(fileManagerUtils.getNextDirectory(fileManagerUtils.getCurrentDirectory(), true));
         SettingsUtils.applySettings(PREFS_SORT, sortType);
+        SettingsUtils.applySettings(PREFS_SORT_ASCENDING,ascending);
     }
 
     public String getPathLabel(String directory) {

@@ -75,6 +75,7 @@ public class MainActivity extends BaseActivity implements KEYS,
     private String homeDirectory;
     private PathLabelView pathLabelView;
     private int sortType;
+    private int ascending;
     private boolean showHidden;
     // flag to show application icon instead of default
     private boolean showThumbs;
@@ -97,6 +98,7 @@ public class MainActivity extends BaseActivity implements KEYS,
 
         managerUtils = FileManagerUtils.getInstance();
         managerUtils.setSortType(sortType);
+        managerUtils.setAscending(ascending);
         managerUtils.setShowHidden(showHidden);
 
         recyclerView = (RecyclerView) findViewById(R.id.file_list);
@@ -118,6 +120,7 @@ public class MainActivity extends BaseActivity implements KEYS,
         showHidden = SettingsUtils.getBoolean(PREFS_HIDDEN, false);
         rememberPath = SettingsUtils.getBoolean(PREFS_REM_PATH, true);
         sortType = SettingsUtils.getInt(PREFS_SORT, FileListSorter.SORT_BY_TYPE);
+        ascending = SettingsUtils.getInt(PREFS_SORT_ASCENDING, FileListSorter.SORT_ASCENDING);
         showThumbs = SettingsUtils.isThumbnailEnabled();
         rootMode = SettingsUtils.getBoolean(PREFS_ROOT_MODE, false);
     }
@@ -457,7 +460,7 @@ public class MainActivity extends BaseActivity implements KEYS,
 
             case R.id.fom_details:
                 DetailsDialogFragment dialogFragment = DetailsDialogFragment.newInstance(file.getPath());
-                dialogFragment.show(getSupportFragmentManager(),"tag");
+                dialogFragment.show(getSupportFragmentManager(), "tag");
                 return true;
         }
         return false;

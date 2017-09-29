@@ -15,9 +15,7 @@ import android.widget.Toast;
 import com.sachin.filemanager.R;
 import com.sachin.filemanager.adapters.DetailsAdapter;
 import com.sachin.filemanager.adapters.Model;
-import com.sachin.filemanager.constants.KEYS;
 import com.sachin.filemanager.utils.FileUtils;
-import com.sachin.filemanager.utils.SettingsUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,8 +43,7 @@ public class DetailsDialogFragment extends DialogFragment implements DialogInter
         View view = getActivity().getLayoutInflater().inflate(R.layout.details_dialog_layout, null);
         builder.setView(view);
         builder.setTitle("File Properties");
-        builder.setPositiveButton("Ascending", this);
-        builder.setNegativeButton("Descending", this);
+        builder.setPositiveButton(android.R.string.ok,this);
         builder.setCancelable(false);
 
         ListView listView = (ListView) view.findViewById(R.id.details_lv);
@@ -61,11 +58,7 @@ public class DetailsDialogFragment extends DialogFragment implements DialogInter
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        if (which == AlertDialog.BUTTON_POSITIVE)
-            SettingsUtils.applySettings(KEYS.PREFS_SORT_ASCENDING, 0);
-
-        else if (which == AlertDialog.BUTTON_NEGATIVE)
-            SettingsUtils.applySettings(KEYS.PREFS_SORT_ASCENDING, 1);
+        dismiss();
     }
 
     public List<Model> getList(File file) {

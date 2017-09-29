@@ -11,6 +11,10 @@ public class FileListSorter implements Comparator<FileItem> {
     public static final int SORT_BY_SIZE = 2;
     public static final int SORT_BY_DATE = 3;
 
+    public static final int SORT_ASCENDING = 1;
+    public static final int SORT_DESCENDING = 0;
+
+
     private int directoriesOnTop = 0; // 0 = true
     private int ascending = 1;
     private int sort = 0;
@@ -19,6 +23,10 @@ public class FileListSorter implements Comparator<FileItem> {
         this.directoriesOnTop = directoriesOnTop;
         this.ascending = ascending;
         this.sort = sort;
+    }
+
+    private static String getExtension(String a) {
+        return a.substring(a.lastIndexOf(".") + 1).toLowerCase();
     }
 
     private boolean isDirectory(FileItem item) {
@@ -79,9 +87,5 @@ public class FileListSorter implements Comparator<FileItem> {
             }
         }
         return 0;
-    }
-
-    private static String getExtension(String a) {
-        return a.substring(a.lastIndexOf(".") + 1).toLowerCase();
     }
 }

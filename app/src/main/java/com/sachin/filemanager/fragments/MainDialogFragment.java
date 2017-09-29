@@ -17,6 +17,7 @@ import android.widget.EditText;
 
 import com.sachin.filemanager.R;
 import com.sachin.filemanager.activities.MainActivity;
+import com.sachin.filemanager.utils.FileListSorter;
 import com.sachin.filemanager.utils.FileManagerUtils;
 import com.sachin.filemanager.utils.FileUtils;
 import com.sachin.filemanager.utils.MainActivityHelper;
@@ -86,22 +87,36 @@ public class MainDialogFragment extends DialogFragment {
     private Dialog makeSortTypeDialog() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         sortType = FileManagerUtils.getInstance().getSortType();
+
         final String[] sortItems = getActivity().getResources().getStringArray(R.array.sort_types);
+
         dialog.setSingleChoiceItems(sortItems, sortType, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 sortType = i;
             }
         });
-        dialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+        dialog.setPositiveButton("Ascending", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                if (FileManagerUtils.getInstance().getSortType() != sortType)
-                    ((MainActivity) getActivity()).getHelper().updateSortSettings(sortType);
-
-                dialogInterface.dismiss();
+                FileManagerUtils fileManagerUtils = FileManagerUtils.getInstance();
+                if (fileManagerUtils.getSortType() != sortType || fileManagerUtils.getAscending() != FileListSorter.SORT_ASCENDING)
+                    ((MainActivity) getActivity()).getHelper().updateSortSettings(sortType, FileListSorter.SORT_ASCENDING);
+                dismiss();
             }
         });
+
+        dialog.setNegativeButton("Descending", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                FileManagerUtils fileManagerUtils = FileManagerUtils.getInstance();
+                if (fileManagerUtils.getSortType() != sortType || fileManagerUtils.getAscending() != FileListSorter.SORT_DESCENDING)
+                    ((MainActivity) getActivity()).getHelper().updateSortSettings(sortType, FileListSorter.SORT_DESCENDING);
+                dismiss();
+            }
+        });
+
         AlertDialog alertDialog = dialog.create();
         return alertDialog;
     }

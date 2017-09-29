@@ -14,6 +14,7 @@ public class FileManagerUtils {
     private boolean showHidden;
     private ArrayList<FileItem> list;
     private int sortType = 0;
+    private int ascending = 1;
 
     public FileManagerUtils() {
         list = new ArrayList<>();
@@ -98,7 +99,7 @@ public class FileManagerUtils {
         } else
             list.add(new FileItem("Empty", "", "00", 00, "0.00b", 0, "rw-r-r", true, false, Icons.getFileIcon(null)));
 
-        Collections.sort(list, new FileListSorter(0, 0, sortType));
+        Collections.sort(list, new FileListSorter(0, ascending, sortType));
 
         return list;
     }
@@ -126,6 +127,14 @@ public class FileManagerUtils {
 
     public void setSortType(int sortType) {
         this.sortType = sortType;
+    }
+
+    public int getAscending() {
+        return ascending;
+    }
+
+    public void setAscending(int ascending) {
+        this.ascending = ascending;
     }
 
     public void searchForFile(File dir, String name) {
