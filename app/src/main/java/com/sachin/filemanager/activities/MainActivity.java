@@ -34,12 +34,10 @@ import com.sachin.filemanager.constants.KEYS;
 import com.sachin.filemanager.fragments.MainDialogFragment;
 import com.sachin.filemanager.ui.DragSelectTouchListener;
 import com.sachin.filemanager.ui.FileItem;
-import com.sachin.filemanager.ui.IconHolder;
 import com.sachin.filemanager.utils.AnimationUtils;
 import com.sachin.filemanager.utils.FileListSorter;
 import com.sachin.filemanager.utils.FileManagerUtils;
 import com.sachin.filemanager.utils.FileUtils;
-import com.sachin.filemanager.utils.IconLoader;
 import com.sachin.filemanager.utils.MainActivityHelper;
 import com.sachin.filemanager.utils.SettingsUtils;
 import com.sachin.filemanager.utils.StorageUtils;
@@ -56,11 +54,8 @@ public class MainActivity extends BaseActivity implements KEYS,
         MainAdapter.OnOptionItemClickListener, NavigationView.OnNavigationItemSelectedListener, MainAdapter.OnSelectionChanged
         , DragSelectTouchListener.OnDragSelectListener {
 
-    public final String TAG = getClass().getSimpleName();
-
     private static final int REQUEST_CODE = 0x11;
-    private MainActivityHelper helper;
-
+    public final String TAG = getClass().getSimpleName();
     //Shared
     public FileManagerUtils managerUtils;
     public RecyclerView recyclerView;
@@ -72,15 +67,16 @@ public class MainActivity extends BaseActivity implements KEYS,
     public View fabContainer;
     public View fabLayout1;
     public View fabLayout2;
-
     public DrawerLayout drawer;
+    private MainActivityHelper helper;
     private Toolbar actionBar;
     private ActionMode actionMode;
     private String homeDirectory;
     private PathLabelView pathLabelView;
     private int sortType;
     private boolean showHidden;
-    private boolean showTumbs;
+    // flag to show application icon instead of default
+    private boolean showThumbs;
     private boolean rememberPath;
     private boolean rootMode;
     private int viewType;
@@ -121,7 +117,7 @@ public class MainActivity extends BaseActivity implements KEYS,
         showHidden = SettingsUtils.getBoolean(PREFS_HIDDEN, false);
         rememberPath = SettingsUtils.getBoolean(PREFS_REM_PATH, true);
         sortType = SettingsUtils.getInt(PREFS_SORT, FileListSorter.SORT_BY_TYPE);
-        showTumbs = SettingsUtils.getBoolean(PREFS_THUMBS, true);
+        showThumbs = SettingsUtils.isThumbnailEnabled();
         rootMode = SettingsUtils.getBoolean(PREFS_ROOT_MODE, false);
     }
 

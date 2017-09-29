@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -17,7 +16,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 
 import com.sachin.filemanager.FileManagerApplication;
 import com.sachin.filemanager.R;
@@ -75,8 +73,8 @@ public class Icons {
         Bitmap layer = BitmapFactory.decodeResource(FileManagerApplication.getAppContext().getResources(),
                 getIconResId(file));
 
-        Bitmap icon = Bitmap.createScaledBitmap(layer,iconSizeMain,iconSizeMain,false);
-        canvas.drawARGB(0,0,0,0);
+        Bitmap icon = Bitmap.createScaledBitmap(layer, iconSizeMain, iconSizeMain, false);
+        canvas.drawARGB(0, 0, 0, 0);
 
         int mini = (iconSizeCircle - icon.getWidth()) / 2;
         canvas.drawBitmap(icon, mini, mini, paint);
