@@ -51,6 +51,29 @@
 
         </RadioGroup>
 
+        <LinearLayout
+            android:id="@+id/use_black_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:visibility="gone">
+
+            <CheckBox
+                android:id="@+id/use_black_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:text="Use full black theme"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:textColor="?android:textColorPrimary" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 

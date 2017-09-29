@@ -19,11 +19,13 @@ public class Theme {
     private int styleResPrimary;
     private int styleResAccent;
     private int styleResBase;
+    private boolean useBlack;
 
-    public Theme(ThemeColor themeColorPrimary, ThemeColor themeColorAccent, int baseTheme) {
+    public Theme(ThemeColor themeColorPrimary, ThemeColor themeColorAccent, int baseTheme,boolean fullBlack) {
         this.themeColorPrimary = themeColorPrimary;
         this.themeColorAccent = themeColorAccent;
         this.baseTheme = baseTheme;
+        this.useBlack = fullBlack;
 
         int primary = themeColorPrimary.ordinal();
         int accent = themeColorAccent.ordinal();
@@ -36,6 +38,12 @@ public class Theme {
 
         try {
             styleResBase = baseThemesRes[baseTheme];
+
+            if (!fullBlack || baseTheme != DARK)
+                return;
+
+                styleResBase = R.style.AppTheme_Dark_Black;
+
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
         }
@@ -75,5 +83,9 @@ public class Theme {
 
     public int getStyleResPrimary() {
         return styleResPrimary;
+    }
+
+    public boolean isFullBlack() {
+        return useBlack;
     }
 }

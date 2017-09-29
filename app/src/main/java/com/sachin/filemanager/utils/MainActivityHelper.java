@@ -32,7 +32,6 @@ import java.util.List;
 
 public class MainActivityHelper implements View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener, KEYS {
     public FileManager fileManager;
-public void stopIconLoading
     boolean fabOpened = false;
     private MainActivity mainActivity;
     private RecyclerView recyclerView;
@@ -50,10 +49,6 @@ public void stopIconLoading
     private Animation show;
     private Animation hide;
     private IconLoader iconLoader;
-
-{
-
-    }
 
     public MainActivityHelper(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -118,7 +113,7 @@ public void stopIconLoading
             if (item.isFile()){
                 if (iconLoader.hasLoadedCache(item.getPath()) == null){
 
-                    iconLoader.loadIcon(itemList,);
+//                    iconLoader.loadIcon(itemList,);
                 }
             }
         }

@@ -24,6 +24,10 @@
         <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
     </style>
 
+    <style name="AppTheme.Dark.Black">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+
     <style name="AppTheme.Auto" parent="@style/Theme.AppCompat.DayNight">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

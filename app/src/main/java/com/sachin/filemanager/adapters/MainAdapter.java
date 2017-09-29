@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.sachin.filemanager.R;
 import com.sachin.filemanager.ui.FileItem;
-import com.sachin.filemanager.ui.Icons;
 import com.sachin.filemanager.utils.FileManagerUtils;
 import com.sachin.filemanager.utils.FileUtils;
 import com.sachin.filemanager.utils.IconLoader;
@@ -132,6 +131,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
         holder.itemName.setText(item.getName());
         holder.itemDetail.setText(item.getSize());
+        holder.itemIcon.setImageBitmap(item.getIcon());
 
         if (item.isFile()) {
 
@@ -144,6 +144,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
                     Bitmap bitmap = iconLoader.hasLoadedCache(item.getPath());
 
                     if (bitmap == null) {
+                        holder.itemIcon.setImageBitmap(item.getIcon());
                         Handler handler = new Handler(new Handler.Callback() {
                             @Override
                             public boolean handleMessage(Message msg) {
@@ -155,17 +156,14 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
                         iconLoader.loadIcon(fileItemList, handler);
                         if (!iconLoader.isAlive())
                             iconLoader.start();
-
-                    } else
+                    }else
                         holder.itemIcon.setImageBitmap(bitmap);
 
-                } else
-                    holder.itemIcon.setImageBitmap(item.getIcon());
+                }
             } else
-                holder.itemIcon.setImageBitmap(Icons.getFileIcon(item.getBaseFile()));
+                holder.itemIcon.setImageBitmap(item.getIcon());
 
-        } else
-            holder.itemIcon.setImageBitmap(Icons.getFolderIcon());
+        }
 
         if (isMultiSelectEnabled())
             holder.checkBox.setVisibility(View.VISIBLE);

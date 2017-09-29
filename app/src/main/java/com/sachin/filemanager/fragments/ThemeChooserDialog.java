@@ -10,25 +10,30 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 
 import com.sachin.filemanager.R;
 import com.sachin.filemanager.adapters.ColorGridAdapter;
 import com.sachin.filemanager.adapters.ThemePagerAdapter;
 import com.sachin.filemanager.constants.ThemeColor;
+import com.sachin.filemanager.ui.Icons;
 import com.sachin.filemanager.ui.Theme;
 import com.sachin.filemanager.ui.ThemeUtils;
 
 public class ThemeChooserDialog extends DialogFragment implements DialogInterface.OnClickListener,
-        RadioGroup.OnCheckedChangeListener,ColorGridAdapter.OnItemClickListener {
+        RadioGroup.OnCheckedChangeListener, ColorGridAdapter.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
     private static ThemeChooserDialog instance;
 
-    private int[] radioButtonsId = {R.id.theme_light,R.id.theme_dark,R.id.theme_auto};
+    private int[] radioButtonsId = {R.id.theme_light, R.id.theme_dark, R.id.theme_auto};
     private ViewPager viewPager;
     private ThemePagerAdapter pagerAdapter;
     private RadioGroup radioGroup;
     private int currentColor;
     private ThemeUtils themeUtils;
+    private View useBlackLayout;
+    private CheckBox useBlackCheckBox;
 
     public static ThemeChooserDialog getInstance() {
         if (instance == null) {
@@ -50,7 +55,7 @@ public class ThemeChooserDialog extends DialogFragment implements DialogInterfac
         builder.setView(view);
 
         viewPager = (ViewPager) view.findViewById(R.id.theme_dialog_pager);
-        TabLayout tabLayout = (TabLayout)view.findViewById(R.id.color_tab);
+        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.color_tab);
         tabLayout.setVisibility(View.GONE);
         tabLayout.setupWithViewPager(viewPager);
 
@@ -65,6 +70,11 @@ public class ThemeChooserDialog extends DialogFragment implements DialogInterfac
         radioGroup.check(radioButtonsId[themeUtils.getTheme().getBaseTheme()]);
         radioGroup.setOnCheckedChangeListener(this);
 
+        useBlackLayout = view.findViewById(R.id.use_black_layout);
+        useBlackCheckBox = (CheckBox) view.findViewById(R.id.use_black_check);
+        useBlackCheckBox.setOnCheckedChangeListener(this);
+        useBlackLayout.setVisibility((themeUtils.getBaseTheme() == Theme.DARK) ? View.VISIBLE : View.GONE);
+        useBlackCheckBox.setChecked(themeUtils.getTheme().isFullBlack());
         return builder.create();
     }
 
@@ -73,6 +83,7 @@ public class ThemeChooserDialog extends DialogFragment implements DialogInterfac
         if (which == AlertDialog.BUTTON_POSITIVE) {
             themeUtils.generateThemeString();
             themeUtils.applyChanges();
+            Icons.clearIconCache();
             getActivity().recreate();
             dismiss();
         } else
@@ -82,15 +93,20 @@ public class ThemeChooserDialog extends DialogFragment implements DialogInterfac
     @Override
     public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
         int checked = group.getCheckedRadioButtonId();
-        switch (checked){
+        switch (checked) {
             case R.id.theme_dark:
                 themeUtils.setBaseTheme(Theme.DARK);
+                if (useBlackLayout.getVisibility() != View.VISIBLE)
+                    useBlackLayout.setVisibility(View.VISIBLE);
                 break;
             case R.id.theme_light:
                 themeUtils.setBaseTheme(Theme.LIGHT);
+                if (useBlackLayout.getVisibility() != View.GONE)
+                    useBlackLayout.setVisibility(View.GONE);
                 break;
             case R.id.theme_auto:
-                themeUtils.setBaseTheme(Theme.AUTO);
+                if (useBlackLayout.getVisibility() != View.GONE)
+                    useBlackLayout.setVisibility(View.GONE);
                 break;
         }
     }
@@ -99,5 +115,10 @@ public class ThemeChooserDialog extends DialogFragment implements DialogInterfac
     public void onItemClick(View view, int position) {
         pagerAdapter.setColorSelected(position);
         themeUtils.setThemeColorAccent(ThemeColor.values()[position]);
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        themeUtils.setFullBlack(isChecked);
     }
 }

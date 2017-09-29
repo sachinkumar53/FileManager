@@ -82,7 +82,6 @@ public class IconLoader extends Thread {
                         @Override
                         public void run() {
                             Message msg = mHandler.obtainMessage();
-                            msg.what =
                             msg.sendToTarget();
                         }
                     });

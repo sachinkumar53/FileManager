@@ -27,6 +27,7 @@ import com.sachin.filemanager.R;
 import com.sachin.filemanager.utils.IconUtils;
 
 import java.io.File;
+import java.util.HashMap;
 
 import static com.sachin.filemanager.utils.FileUtils.TYPE_APK;
 import static com.sachin.filemanager.utils.FileUtils.TYPE_ARCHIVE;
@@ -39,6 +40,7 @@ import static com.sachin.filemanager.utils.FileUtils.TYPE_IMAGE;
 import static com.sachin.filemanager.utils.FileUtils.TYPE_JAR;
 import static com.sachin.filemanager.utils.FileUtils.TYPE_PDF;
 import static com.sachin.filemanager.utils.FileUtils.TYPE_PPT;
+import static com.sachin.filemanager.utils.FileUtils.TYPE_TEXT;
 import static com.sachin.filemanager.utils.FileUtils.TYPE_VIDEO;
 import static com.sachin.filemanager.utils.FileUtils.TYPE_XLS;
 import static com.sachin.filemanager.utils.FileUtils.TYPE_XML;
@@ -48,20 +50,40 @@ public class Icons {
     private static final int iconSizeCircle = 36;
     private static final int iconSizeMain = 24;
     private static final Context context = FileManagerApplication.getAppContext();
+    private static final String FOLDER = "folder";
+    private static HashMap<String, Bitmap> folderIcon;
 
     public static Bitmap getFolderIcon() {
-        int size = IconUtils.dpToPx(iconSizeCircle);
-        Paint paint = new Paint();
-        Bitmap bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),
-                R.drawable.icon_folder), size, size, true);
+        if (folderIcon == null)
+            folderIcon = new HashMap<>();
 
-        ColorFilter colorFilter = new PorterDuffColorFilter(IconUtils.getAccentColor(), PorterDuff.Mode.SRC_IN);
+        if (folderIcon.get(FOLDER) != null)
+            return folderIcon.get(FOLDER);
+
+        int size = IconUtils.dpToPx(iconSizeCircle);
+
+        Paint paint = new Paint();
+        int accent = IconUtils.getAccentColor();
+        paint.setColor(accent);
+        ColorFilter colorFilter = new PorterDuffColorFilter(accent, PorterDuff.Mode.SRC_IN);
         paint.setColorFilter(colorFilter);
 
-        Canvas canvas = new Canvas();
-        canvas.drawBitmap(bitmap, 0, 0, paint);
+        Bitmap bitmap = Bitmap.createBitmap(size,size, Bitmap.Config.ARGB_8888);
+        Bitmap folder = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),
+                R.drawable.icon_folder), size, size, true);
+
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawBitmap(folder, 0, 0, paint);
+        folderIcon.put(FOLDER, bitmap);
 
         return bitmap;
+    }
+
+    public static void clearIconCache() {
+        if (folderIcon != null && !folderIcon.isEmpty()) {
+            folderIcon.clear();
+            folderIcon = null;
+        }
     }
 
     public static Bitmap getFileIcon(File file) {
@@ -192,6 +214,10 @@ public class Icons {
 
                 else if (identify(sub_ext).equals(TYPE_CONFIG))
                     return R.drawable.icon_folder;
+
+                else if (identify(sub_ext).equals(TYPE_TEXT))
+                    return R.drawable.ic_file_type_txt;
+
                 else
                     return R.drawable.ic_file_type_null;
             }

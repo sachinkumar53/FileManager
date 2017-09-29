@@ -104,12 +104,20 @@ public class FileManagerUtils {
     }
 
     public FileItem getFileItem(File file) {
+        if (file.isFile())
+            return new FileItem(
+                    file.getName(), file.getPath(),
+                    FileUtils.getLastModified(file), file.lastModified(),
+                    FileUtils.calculateSize(file), file.length(),
+                    FileUtils.getFilePermissions(file),
+                    file.isFile(), file.isDirectory(), Icons.getFileIcon(file));
+
         return new FileItem(
                 file.getName(), file.getPath(),
                 FileUtils.getLastModified(file), file.lastModified(),
                 FileUtils.calculateSize(file), file.length(),
                 FileUtils.getFilePermissions(file),
-                file.isFile(), file.isDirectory(), file.isDirectory() ? Icons.getFolderIcon() : Icons.getFileIcon(file));
+                file.isFile(), file.isDirectory(), Icons.getFolderIcon());
     }
 
     public int getSortType() {
