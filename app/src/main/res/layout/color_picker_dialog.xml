@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minHeight="200dp"
+    android:minWidth="320dp"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/color_grid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <RadioGroup
+            android:id="@+id/radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:weightSum="3">
+
+            <RadioButton
+                android:id="@+id/theme_light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="Light" />
+
+            <RadioButton
+                android:id="@+id/theme_dark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Dark" />
+
+            <RadioButton
+                android:id="@+id/theme_auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Auto" />
+
+        </RadioGroup>
+
+
+        <Button
+            android:id="@+id/dialog_ok"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="@android:string/ok" />
+
+    </LinearLayout>
+
+</RelativeLayout>

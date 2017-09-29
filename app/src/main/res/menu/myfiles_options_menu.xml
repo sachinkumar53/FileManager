@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/switchLayout"
+        android:title="Switch Layout"
+        android:icon="@drawable/abc_ic_icon_grid"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/menu_id_search"
+        app:showAsAction="always|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        android:title="@string/menu_search"/>
+
+    <item app:showAsAction="never"
+        android:title="@string/menu_settings"
+        android:id="@+id/menu_id_settings"/>
+
+    <item app:showAsAction="never"
+        android:id="@+id/menu_id_sort"
+        android:title="@string/menu_sort_type"/>
+
+    <item
+        app:showAsAction="never"
+        android:title="Exit"
+        android:id="@+id/menu_id_quit"/>
+
+</menu>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_root"
+            android:checked="true"
+            android:icon="@drawable/ic_slash"
+            android:title="Root"
+            android:visible="false" />
+        <item
+            android:id="@+id/nav_device"
+            android:icon="@drawable/icon_phone"
+            android:title="Device Storage" />
+        <item
+            android:id="@+id/nav_sd_card"
+            android:icon="@drawable/icon_micro_sd"
+            android:title="SD Card"
+            android:visible="false" />
+        <item
+            android:id="@+id/nav_otg"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="OTG"
+            android:visible="false" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Send" />
+        </menu>
+    </item>
+
+</menu>

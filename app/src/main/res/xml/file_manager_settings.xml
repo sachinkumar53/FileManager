@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/files_and_folder_category">
+
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/key_hidden_files"
+            android:title="@string/settings_show_hidden_files" />
+
+        <CheckBoxPreference
+            android:key="rem_path"
+            android:defaultValue="true"
+            android:title="Remember Path"
+            android:summary="Open the same where the app closed"/>
+
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/key_image_thumbs"
+            android:title="@string/settings_image_thumbs_desc" />
+
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="@string/key_root_mode"
+            android:title="@string/settings_root_mode_desc" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Theme">
+
+        <com.sachin.filemanager.ui.ColorPreference
+            android:key="@string/key_theme_style"
+            android:title="Choose theme" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

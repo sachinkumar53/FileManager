@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/row_layout"
+    android:layout_height="?android:listPreferredItemHeight"
+    android:background="?android:attr/selectableItemBackground">
+
+    <com.sachin.filemanager.view.SmoothCheckBox
+        app:color_checked="?attr/colorAccent"
+        android:clickable="false"
+        android:layout_alignParentStart="true"
+        android:id="@+id/select_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16.0dp"
+        android:layout_marginLeft="16.0dp" />
+
+    <ImageView
+        android:layout_toEndOf="@id/select_checkbox"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16.0dp"
+        android:src="@drawable/icon_folder"
+        android:id="@+id/row_image"
+        android:layout_width="@dimen/folder_icon_size"
+        android:layout_height="@dimen/folder_icon_size"
+        android:layout_toRightOf="@id/select_checkbox" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_toEndOf="@id/row_image"
+        android:layout_toRightOf="@id/row_image"
+        android:layout_toStartOf="@+id/more_file_options"
+        android:layout_toLeftOf="@+id/more_file_options"
+        android:orientation="vertical">
+
+        <TextView
+            android:fontFamily="sans-serif"
+            android:id="@+id/top_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:maxLines="1"
+            android:text="Android"
+            android:textAppearance="?android:textAppearanceMedium" />
+
+        <TextView
+            android:fontFamily="sans-serif"
+            android:id="@+id/bottom_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12 item"
+            android:textAppearance="?android:textAppearanceSmall" />
+
+    </LinearLayout>
+
+    <!--<TextView
+        android:textAppearance="?android:textAppearanceSmall"
+        android:paddingTop="8dp"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/more_file_options"
+        android:id="@+id/item_permission"
+        android:text="rw-r-x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/more_file_options" />
+
+    <TextView
+        android:textAppearance="?android:textAppearanceSmall"
+        android:paddingBottom="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@+id/more_file_options"
+        android:id="@+id/date_modified"
+        android:text="12/06/2017"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/more_file_options" />-->
+
+    <ImageView
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        android:padding="8dp"
+        android:id="@+id/more_file_options"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_more_file_options"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_divider_height"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@id/row_image"
+        android:layout_toRightOf="@id/row_image"
+        android:background="@color/divider" />
+
+</RelativeLayout>
