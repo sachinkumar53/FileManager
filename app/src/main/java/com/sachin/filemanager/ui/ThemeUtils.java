@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.sachin.filemanager.FileManagerApplication;
 import com.sachin.filemanager.constants.ThemeColor;
-import com.sachin.filemanager.utils.SettingsUtils;
+import com.sachin.filemanager.utils.SettingsUtil;
 
 import static com.sachin.filemanager.constants.KEYS.PREFS_THEME_STRING;
 
@@ -33,7 +33,7 @@ public class ThemeUtils {
     }
 
     public void init() {
-        themeString = SettingsUtils.getString(PREFS_THEME_STRING, getDefaultThemeString());
+        themeString = SettingsUtil.getString(PREFS_THEME_STRING, getDefaultThemeString());
         decodeThemeString(themeString);
         Log.w(getClass().getSimpleName(), themeString);
         theme = new Theme(themeColorPrimary, themeColorAccent, baseTheme, fullBlack);
@@ -105,7 +105,7 @@ public class ThemeUtils {
     public String applyChanges() {
         themeString = generateThemeString();
         theme = new Theme(themeColorPrimary, themeColorAccent, baseTheme, fullBlack);
-        SettingsUtils.applySettings(PREFS_THEME_STRING, themeString);
+        SettingsUtil.applySettings(PREFS_THEME_STRING, themeString);
         return themeString;
     }
 }

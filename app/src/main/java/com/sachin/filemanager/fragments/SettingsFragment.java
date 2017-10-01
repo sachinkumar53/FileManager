@@ -10,7 +10,7 @@ import android.support.v7.preference.SwitchPreferenceCompat;
 import com.sachin.filemanager.R;
 import com.sachin.filemanager.constants.KEYS;
 import com.sachin.filemanager.ui.ColorPreference;
-import com.sachin.filemanager.utils.SettingsUtils;
+import com.sachin.filemanager.utils.SettingsUtil;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements OnPreferenceChangeListener, KEYS {
 
@@ -52,17 +52,17 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnPref
 
         if (preference instanceof CheckBoxPreference) {
             if (preference.equals(hiddenFiles)) {
-                SettingsUtils.applySettings(PREFS_HIDDEN, Boolean.parseBoolean(String.valueOf(newValue)));
+                SettingsUtil.applySettings(PREFS_HIDDEN, Boolean.parseBoolean(String.valueOf(newValue)));
                 return true;
             } else if (preference.equals(remPath)) {
-                SettingsUtils.applySettings(PREFS_REM_PATH, Boolean.parseBoolean(String.valueOf(newValue)));
+                SettingsUtil.applySettings(PREFS_REM_PATH, Boolean.parseBoolean(String.valueOf(newValue)));
                 return true;
             } else if (preference.equals(thumbNails)) {
-                SettingsUtils.applySettings(PREFS_THUMBS, Boolean.parseBoolean(String.valueOf(newValue)));
+                SettingsUtil.applySettings(PREFS_THUMBS, Boolean.parseBoolean(String.valueOf(newValue)));
                 return true;
             }
         } else if (preference instanceof SwitchPreferenceCompat) {
-            SettingsUtils.applySettings(PREFS_ROOT_MODE, Boolean.parseBoolean(String.valueOf(newValue)));
+            SettingsUtil.applySettings(PREFS_ROOT_MODE, Boolean.parseBoolean(String.valueOf(newValue)));
             return true;
 
         }

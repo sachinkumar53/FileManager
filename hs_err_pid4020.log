@@ -366,7 +366,7 @@ PROCESSOR_IDENTIFIER=x86 Family 6 Model 58 Stepping 9, GenuineIntel
 
 OS: Windows 10.0 Build 14393 (10.0.14393.0)
 
-CPU:total 2 (initial active 2) (2 cores per cpu, 1 threads per core) family 6 model 58 stepping 9, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, clmul, erms, tsc, tscinvbit, tscinv
+CPU:total 2 (initial active 2) (2 cores per cpu, 1 threads per core) family 6 listItem 58 stepping 9, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, clmul, erms, tsc, tscinvbit, tscinv
 
 Memory: 4k page, physical 1986920k(318692k free), swap 20418920k(18024936k free)
 

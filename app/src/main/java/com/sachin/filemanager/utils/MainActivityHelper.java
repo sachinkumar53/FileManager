@@ -30,7 +30,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 
-public class MainActivityHelper implements View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener, KEYS {
+public class MainActivityHelper implements View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener, KEYS{
     public FileManager fileManager;
     boolean fabOpened = false;
     private MainActivity mainActivity;
@@ -96,26 +96,13 @@ public class MainActivityHelper implements View.OnClickListener, SharedPreferenc
         recyclerView.addOnScrollListener(new HideShowScrollListener(fab));
     }
 
-        public void updateDirectory(List<FileItem> nextDir) {
+    public void updateDirectory(List<FileItem> nextDir) {
         mainAdapter.stopThumbnailThread();
         mainAdapter.addAll(nextDir);
         mainAdapter.refresh();
 
         if (isFabOpened()) {
             hideFAB();
-        }
-    }
-    public void startIconLoading(List<FileItem> itemList){
-        if (iconLoader == null)
-            iconLoader = new IconLoader();
-
-        for (FileItem item:itemList){
-            if (item.isFile()){
-                if (iconLoader.hasLoadedCache(item.getPath()) == null){
-
-//                    iconLoader.loadIcon(itemList,);
-                }
-            }
         }
     }
 
@@ -143,7 +130,7 @@ public class MainActivityHelper implements View.OnClickListener, SharedPreferenc
 
 
     public Uri getTreeUri() {
-        Uri treeUri = SettingsUtils.getTreeUri();
+        Uri treeUri = SettingsUtil.getTreeUri();
         return treeUri;
     }
 
@@ -231,23 +218,23 @@ public class MainActivityHelper implements View.OnClickListener, SharedPreferenc
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     }
 
-    public void updateSortSettings(int sortType,int ascending) {
+    public void updateSortSettings(int sortType, int ascending) {
         fileManagerUtils.setSortType(sortType);
         fileManagerUtils.setAscending(ascending);
         updateDirectory(fileManagerUtils.getNextDirectory(fileManagerUtils.getCurrentDirectory(), true));
-        SettingsUtils.applySettings(PREFS_SORT, sortType);
-        SettingsUtils.applySettings(PREFS_SORT_ASCENDING,ascending);
+        SettingsUtil.applySettings(PREFS_SORT, sortType);
+        SettingsUtil.applySettings(PREFS_SORT_ASCENDING, ascending);
     }
 
     public String getPathLabel(String directory) {
         String pathLabel = null;
-        if (directory.equals(StorageUtils.getSdCardPath()))
+        if (directory.equals(StorageUtil.getSdCardPath()))
             pathLabel = "DEVICE STORAGE";
 
-        else if (directory.equals(StorageUtils.getExtSdCardPaths(mainActivity.getBaseContext())))
+        else if (directory.equals(StorageUtil.getExtSdCardPaths(mainActivity.getBaseContext())))
             pathLabel = "SD CARD";
 
-        else if (directory.equals(StorageUtils.getRootPath()))
+        else if (directory.equals(StorageUtil.getRootPath()))
             pathLabel = "ROOT";
 
         return pathLabel;

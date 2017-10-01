@@ -11,15 +11,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sachin.filemanager.R;
 import com.sachin.filemanager.ui.FileItem;
 import com.sachin.filemanager.utils.FileManagerUtils;
-import com.sachin.filemanager.utils.FileUtils;
+import com.sachin.filemanager.utils.FileUtil;
 import com.sachin.filemanager.utils.IconLoader;
-import com.sachin.filemanager.utils.SettingsUtils;
+import com.sachin.filemanager.utils.SettingsUtil;
 import com.sachin.filemanager.view.SmoothCheckBox;
 
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         fileManagerUtils = FileManagerUtils.getInstance();
         this.animation = true;
         checkAnim = false;
+        selectedItems = new HashMap<>();
     }
 
     public void addAll(List<FileItem> list) {
@@ -133,38 +135,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         holder.itemDetail.setText(item.getSize());
         holder.itemIcon.setImageBitmap(item.getIcon());
 
-        if (item.isFile()) {
-
-            if (SettingsUtils.isThumbnailEnabled()) {
-                if (iconLoader == null)
-                    iconLoader = new IconLoader();
-
-                if (FileUtils.isImageFile(item.getBaseFile()) || FileUtils.isAPKFile(item.getBaseFile())) {
-
-                    Bitmap bitmap = iconLoader.hasLoadedCache(item.getPath());
-
-                    if (bitmap == null) {
-                        holder.itemIcon.setImageBitmap(item.getIcon());
-                        Handler handler = new Handler(new Handler.Callback() {
-                            @Override
-                            public boolean handleMessage(Message msg) {
-                                notifyDataSetChanged();
-                                return true;
-                            }
-                        });
-
-                        iconLoader.loadIcon(fileItemList, handler);
-                        if (!iconLoader.isAlive())
-                            iconLoader.start();
-                    }else
-                        holder.itemIcon.setImageBitmap(bitmap);
-
-                }
-            } else
-                holder.itemIcon.setImageBitmap(item.getIcon());
-
-        }
-
         if (isMultiSelectEnabled())
             holder.checkBox.setVisibility(View.VISIBLE);
         else
@@ -178,11 +148,47 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
         if (position > lastPosition && animation) {
             holder.itemView.clearAnimation();
-            Animation anim = android.view.animation.AnimationUtils.loadAnimation(c, R.anim.row_item_fade_up);
+            Animation anim = AnimationUtils.loadAnimation(c, R.anim.row_item_fade_up);
             anim.setStartOffset(30 * position);
             holder.itemView.startAnimation(anim);
             lastPosition = position;
         }
+
+        if (item.isFile()) {
+
+            if (!SettingsUtil.isThumbnailEnabled())
+                return;
+
+            if (iconLoader == null)
+                iconLoader = new IconLoader();
+
+            if (FileUtil.isImageFile(item.getBaseFile()) || FileUtil.isAPKFile(item.getBaseFile())) {
+                Bitmap bitmap = iconLoader.hasLoadedCache(item.getPath());
+
+                if (bitmap != null) {
+                    holder.itemIcon.setImageBitmap(bitmap);
+                    return;
+                } else {
+                    holder.itemIcon.setImageBitmap(item.getIcon());
+                    Handler handler = new Handler(new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message msg) {
+                            notifyDataSetChanged();
+                            return true;
+                        }
+                    });
+
+                    iconLoader.loadIcon(fileItemList, handler);
+
+                    if (iconLoader.getState() == Thread.State.NEW) {
+                        iconLoader.start();
+                    }
+
+                }
+
+            }
+        }
+
     }
 
     public void stopThumbnailThread() {
@@ -246,17 +252,29 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     }
 
     public void setMultiSelectEnabled(boolean multiSelectEnabled) {
-        if (selectedItems == null)
-            selectedItems = new HashMap<>();
-
         this.multiSelectEnabled = multiSelectEnabled;
+        checkAnim = false;
+        notifyDataSetChanged();
+    }
 
-        if (!multiSelectEnabled) {
+    public boolean hasMultiSelectData() {
+        if (selectedItems.isEmpty())
+            return false;
+
+        return true;
+    }
+
+    public void setMultiSelectEnabled(boolean multiSelectEnabled, boolean clearData) {
+        if (clearData) {
             if (!selectedItems.isEmpty())
                 selectedItems.clear();
         }
-        checkAnim = false;
-        notifyDataSetChanged();
+
+        setMultiSelectEnabled(multiSelectEnabled);
+    }
+
+    public HashMap<Integer, String> getSelectedItems() {
+        return selectedItems;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {

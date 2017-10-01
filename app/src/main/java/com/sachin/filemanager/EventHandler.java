@@ -18,7 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sachin.filemanager.activities.FileListActivity;
-import com.sachin.filemanager.utils.FileUtils;
+import com.sachin.filemanager.utils.FileUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -437,14 +437,14 @@ public class EventHandler implements View.OnClickListener {
 				apkIcon = new ApkIconCreator(mContext);
 			}
 */
-			//Drawable drawable = FileUtils.getFileIcon(mContext,file);
+			//Drawable drawable = FileUtil.getFileIcon(mContext,file);
 			//mViewHolder.icon.setImageDrawable(drawable);
 
 			if (thumbnail_flag && file != null && file.isFile()){
 				String ext = file.toString();
 				String sub_ext = ext.substring(ext.lastIndexOf(".") + 1);
 
-				if (FileUtils.identify(sub_ext).equals(FileUtils.TYPE_IMAGE)) {
+				if (FileUtil.identify(sub_ext).equals(FileUtil.TYPE_IMAGE)) {
 
 					if (thumbnail_flag && file.length() != 0) {
 						Bitmap thumb = null;//mThumbnail.isBitmapCached(file.getPath());
@@ -470,7 +470,7 @@ public class EventHandler implements View.OnClickListener {
 						//mViewHolder.icon.setImageResource(R.drawable.myfiles_file_images);
 					}
 
-				} else if (FileUtils.identify(sub_ext).equals(FileUtils.TYPE_APK)) {
+				} else if (FileUtil.identify(sub_ext).equals(FileUtil.TYPE_APK)) {
 					//Drawable appIcon = apkIcon.isApkIconCached(file.getPath());
 					if (file.length() != 0) {
 						/*if (appIcon == null) {

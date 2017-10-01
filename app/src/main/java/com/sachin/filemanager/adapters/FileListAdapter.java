@@ -1,12 +1,8 @@
 package com.sachin.filemanager.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,21 +13,13 @@ import android.widget.TextView;
 
 import com.sachin.filemanager.FileManager;
 import com.sachin.filemanager.R;
-import com.sachin.filemanager.utils.FileUtils;
-
+import com.sachin.filemanager.utils.FileUtil;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileListAdapter extends ArrayAdapter<String> {
-
-    private class ViewHolder {
-        private ImageView itemIcon;
-        private TextView itemName;
-        private TextView itemDetails;
-        private ImageView itemOptions;
-    }
 
     private List<String> fileArrayList;
     private ArrayList<String> selectedFiles; //mMultiSelectData
@@ -45,7 +33,6 @@ public class FileListAdapter extends ArrayAdapter<String> {
     private boolean thumbsAllowed;
     private boolean showFilePermissions;
     private int lastPosition = -1;
-
     public FileListAdapter(Context context, int resource, List<String> objects, FileManager manager) {
         super(context, resource, objects);
         this.context = context;
@@ -90,20 +77,20 @@ public class FileListAdapter extends ArrayAdapter<String> {
         return multiSelect;
     }
 
-    public int getSelectedItemCount() {
-        if (selectedFiles != null && selectedFiles.size() > 0) {
-            return selectedFiles.size();
-        } else {
-            return 0;
-        }
-    }
-
     public void setMultiSelect(boolean multiSelect) {
         this.multiSelect = multiSelect;
 
         if (!multiSelect)
             dismissMultiSelect(true);
         notifyDataSetChanged();
+    }
+
+    public int getSelectedItemCount() {
+        if (selectedFiles != null && selectedFiles.size() > 0) {
+            return selectedFiles.size();
+        } else {
+            return 0;
+        }
     }
 
     public void selectItem(int position, String path) {
@@ -191,7 +178,7 @@ public class FileListAdapter extends ArrayAdapter<String> {
             convertView.setBackgroundColor(Color.TRANSPARENT);
 
 
-        //Drawable drawable = FileUtils.getFileIcon(context,file);
+        //Drawable drawable = FileUtil.getFileIcon(context,file);
         //viewHolder.itemIcon.setImageDrawable(drawable);
 
         if (thumbsAllowed && file != null && file.isFile()) {
@@ -206,7 +193,7 @@ public class FileListAdapter extends ArrayAdapter<String> {
             //   iconCreator = new ApkIconCreator(context);
             //}
 
-            if (FileUtils.identify(sub_ext).equals(FileUtils.TYPE_IMAGE)) {
+            if (FileUtil.identify(sub_ext).equals(FileUtil.TYPE_IMAGE)) {
 
                 if (file.length() != 0) {
                     //                  Bitmap thumb = thumbnailCreator.isBitmapCached(file.getPath());
@@ -235,7 +222,7 @@ public class FileListAdapter extends ArrayAdapter<String> {
                     //viewHolder.itemIcon.setImageResource(R.drawable.myfiles_file_images);
                 }
 */
-                } else if (FileUtils.identify(sub_ext).equals(FileUtils.TYPE_APK)) {
+                } else if (FileUtil.identify(sub_ext).equals(FileUtil.TYPE_APK)) {
                     // Drawable appIcon = iconCreator.isApkIconCached(file.getPath());
                     if (file.length() != 0) {
                     /*if (appIcon == null) {
@@ -266,15 +253,22 @@ public class FileListAdapter extends ArrayAdapter<String> {
             }
         }
 
-        String fileSize = FileUtils.calculateSize(file);
+        String fileSize = FileUtil.calculateSize(file);
 
         if (showFilePermissions)
-            viewHolder.itemDetails.setText(fileSize + FileUtils.getFilePermissions(file));
+            viewHolder.itemDetails.setText(fileSize + FileUtil.getFilePermissions(file));
         else
             viewHolder.itemDetails.setText(fileSize);
 
         viewHolder.itemName.setText(file.getName());
 
         return convertView;
+    }
+
+    private class ViewHolder {
+        private ImageView itemIcon;
+        private TextView itemName;
+        private TextView itemDetails;
+        private ImageView itemOptions;
     }
 }

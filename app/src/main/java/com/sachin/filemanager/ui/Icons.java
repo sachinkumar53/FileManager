@@ -21,49 +21,51 @@ import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.sachin.filemanager.FileManagerApplication;
 import com.sachin.filemanager.R;
-import com.sachin.filemanager.utils.IconUtils;
+import com.sachin.filemanager.utils.IconUtil;
+import com.sachin.filemanager.utils.MimeTypes;
 
 import java.io.File;
 import java.util.HashMap;
 
-import static com.sachin.filemanager.utils.FileUtils.TYPE_APK;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_ARCHIVE;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_AUDIO;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_CONFIG;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_CONTACT;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_DOCUMENT;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_HTML;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_IMAGE;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_JAR;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_PDF;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_PPT;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_TEXT;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_VIDEO;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_XLS;
-import static com.sachin.filemanager.utils.FileUtils.TYPE_XML;
-import static com.sachin.filemanager.utils.FileUtils.identify;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_APK;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_ARCHIVE;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_AUDIO;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_CONFIG;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_CONTACT;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_DOCUMENT;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_HTML;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_IMAGE;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_JAR;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_PDF;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_PPT;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_TEXT;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_VIDEO;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_XLS;
+import static com.sachin.filemanager.utils.FileUtil.TYPE_XML;
+import static com.sachin.filemanager.utils.FileUtil.identify;
 
 public class Icons {
     private static final int iconSizeCircle = 36;
     private static final int iconSizeMain = 24;
     private static final Context context = FileManagerApplication.getAppContext();
     private static final String FOLDER = "folder";
-    private static HashMap<String, Bitmap> folderIcon;
+    private static HashMap<String, Bitmap> iconCache;
 
     public static Bitmap getFolderIcon() {
-        if (folderIcon == null)
-            folderIcon = new HashMap<>();
+        if (iconCache == null)
+            iconCache = new HashMap<>();
 
-        if (folderIcon.get(FOLDER) != null)
-            return folderIcon.get(FOLDER);
+        if (iconCache.get(FOLDER) != null)
+            return iconCache.get(FOLDER);
 
-        int size = IconUtils.dpToPx(iconSizeCircle);
+        int size = IconUtil.dpToPx(iconSizeCircle);
 
         Paint paint = new Paint();
-        int accent = IconUtils.getAccentColor();
+        int accent = IconUtil.getAccentColor();
         paint.setColor(accent);
         ColorFilter colorFilter = new PorterDuffColorFilter(accent, PorterDuff.Mode.SRC_IN);
         paint.setColorFilter(colorFilter);
@@ -74,27 +76,34 @@ public class Icons {
 
         Canvas canvas = new Canvas(bitmap);
         canvas.drawBitmap(folder, 0, 0, paint);
-        folderIcon.put(FOLDER, bitmap);
+        iconCache.put(FOLDER, bitmap);
 
         return bitmap;
     }
 
     public static void clearIconCache() {
-        if (folderIcon != null && !folderIcon.isEmpty()) {
-            folderIcon.clear();
-            folderIcon = null;
+        if (iconCache != null && !iconCache.isEmpty()) {
+            iconCache.clear();
+            iconCache = null;
         }
     }
 
     public static Bitmap getFileIcon(File file) {
+        String extension = MimeTypes.getExtension(file.getName());
+
+        if (iconCache.containsKey(extension)) {
+            Log.w("ICONS"," Cache has value. returned successfully");
+            return iconCache.get(extension);
+        }
+
         Paint paint = new Paint();
-        int circleSize = IconUtils.dpToPx(iconSizeCircle);
-        int mainSize = IconUtils.dpToPx(iconSizeMain);
+        int circleSize = IconUtil.dpToPx(iconSizeCircle);
+        int mainSize = IconUtil.dpToPx(iconSizeMain);
 
         Bitmap circle = Bitmap.createBitmap(circleSize, circleSize, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(circle);
 
-        paint.setColor(IconUtils.getAccentColor());
+        paint.setColor(IconUtil.getAccentColor());
         paint.setAntiAlias(true);
 
         RectF rectF = new RectF(new Rect(0, 0, circleSize, circleSize));
@@ -110,6 +119,9 @@ public class Icons {
         int mini = (circle.getWidth() - icon.getWidth()) / 2;
 
         canvas.drawBitmap(icon, mini, mini, paint);
+
+        iconCache.put(extension,circle);
+        Log.w("ICONS"," Cache was null. Added successfully");
         return circle;
     }
 
@@ -145,7 +157,7 @@ public class Icons {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(file.getPath(), options);
-        options.inSampleSize = IconUtils.calculateSampleSize(options, 48, 48);
+        options.inSampleSize = IconUtil.calculateSampleSize(options, 48, 48);
         options.inJustDecodeBounds = false;
 
         Bitmap source = BitmapFactory.decodeFile(file.getPath(), options);

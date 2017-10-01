@@ -23,7 +23,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -49,35 +48,6 @@ public class FileListActivity extends AppCompatActivity implements AdapterView.O
 
     private static final int MENU_SEARCH =  0x02;
     private static final int SEARCH_B = 	0x09;
-
-    private FileManager fileManager;
-    private EventHandler eventHandler;
-    private EventHandler.FileItemAdapter fileItemAdapter;
-    private String homeDir;
-
-    private SharedPreferences mSettings;
-    private boolean mReturnIntent = false;
-    private boolean mHoldingZip = false;
-    private boolean mUseBackKey = true;
-    private String mSelectedListItem;
-    private TextView mPathLabel;
-    private TextView animPathLabel;
-
-    private Animation slideIn;
-    private Animation slideOut;
-
-    private String path,pathLabel;
-
-    private StringBuilder pathBuilder;
-
-    private StringBuilder oldDir;
-    private StringBuilder newDir;
-
-    private BroadcastReceiver settingsReceiver;
-    private IntentFilter filter;
-
-    private ListView mFileListView;
-
     public static boolean mHoldingFile = false;
     public static String mCopiedTarget;
     public static String mZippedTarget;
@@ -85,6 +55,26 @@ public class FileListActivity extends AppCompatActivity implements AdapterView.O
                                                           *1 is move
                                                           *2 is paste
                                                           *3 is delete */
+    private FileManager fileManager;
+    private EventHandler eventHandler;
+    private EventHandler.FileItemAdapter fileItemAdapter;
+    private String homeDir;
+    private SharedPreferences mSettings;
+    private boolean mReturnIntent = false;
+    private boolean mHoldingZip = false;
+    private boolean mUseBackKey = true;
+    private String mSelectedListItem;
+    private TextView mPathLabel;
+    private TextView animPathLabel;
+    private Animation slideIn;
+    private Animation slideOut;
+    private String path,pathLabel;
+    private StringBuilder pathBuilder;
+    private StringBuilder oldDir;
+    private StringBuilder newDir;
+    private BroadcastReceiver settingsReceiver;
+    private IntentFilter filter;
+    private ListView mFileListView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -470,7 +460,7 @@ public class FileListActivity extends AppCompatActivity implements AdapterView.O
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.myfiles_options_menu, menu);
+        inflater.inflate(R.menu.activity_menu_main, menu);
         MenuItem item = menu.findItem(R.id.menu_id_search);
 
         item.setIcon(android.support.v7.appcompat.R.drawable.abc_ic_search_api_material);

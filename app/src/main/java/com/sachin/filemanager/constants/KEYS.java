@@ -6,6 +6,7 @@ public interface KEYS {
     String PREFS_THUMBS = "image_thumbs";
     String PREFS_SORT = "sort";
     String PREFS_SORT_ASCENDING = "sort_ascending";
+    String PREFS_DIR_ON_TOP = "dir_on_top";
     String PREFS_HOME = "home";
     String PREFS_ROOT_MODE = "root_mode";
     String PREFS_VIEW_MODE = "view_mode";

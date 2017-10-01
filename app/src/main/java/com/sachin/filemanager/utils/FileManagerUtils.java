@@ -13,6 +13,7 @@ public class FileManagerUtils {
     private String currentDirectory;
     private boolean showHidden;
     private ArrayList<FileItem> list;
+    private int directoriesOnTop = 0;
     private int sortType = 0;
     private int ascending = 1;
 
@@ -99,7 +100,7 @@ public class FileManagerUtils {
         } else
             list.add(new FileItem("Empty", "", "00", 00, "0.00b", 0, "rw-r-r", true, false, Icons.getFileIcon(null)));
 
-        Collections.sort(list, new FileListSorter(0, ascending, sortType));
+        Collections.sort(list, new FileListSorter(directoriesOnTop, ascending, sortType));
 
         return list;
     }
@@ -108,16 +109,16 @@ public class FileManagerUtils {
         if (file.isFile())
             return new FileItem(
                     file.getName(), file.getPath(),
-                    FileUtils.getLastModified(file), file.lastModified(),
-                    FileUtils.calculateSize(file), file.length(),
-                    FileUtils.getFilePermissions(file),
+                    FileUtil.getLastModified(file), file.lastModified(),
+                    FileUtil.calculateSize(file), file.length(),
+                    FileUtil.getFilePermissions(file),
                     file.isFile(), file.isDirectory(), Icons.getFileIcon(file));
 
         return new FileItem(
                 file.getName(), file.getPath(),
-                FileUtils.getLastModified(file), file.lastModified(),
-                FileUtils.calculateSize(file), file.length(),
-                FileUtils.getFilePermissions(file),
+                FileUtil.getLastModified(file), file.lastModified(),
+                FileUtil.calculateSize(file), file.length(),
+                FileUtil.getFilePermissions(file),
                 file.isFile(), file.isDirectory(), Icons.getFolderIcon());
     }
 
@@ -127,6 +128,14 @@ public class FileManagerUtils {
 
     public void setSortType(int sortType) {
         this.sortType = sortType;
+    }
+
+    public void showDirectoriesOnTop(boolean top) {
+        this.directoriesOnTop = top ? 0:1;
+    }
+
+    public boolean isDirectoriesOnTop() {
+        return directoriesOnTop == 0;
     }
 
     public int getAscending() {

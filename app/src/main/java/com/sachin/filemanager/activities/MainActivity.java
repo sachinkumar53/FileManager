@@ -21,7 +21,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,25 +34,27 @@ import com.sachin.filemanager.fragments.DetailsDialogFragment;
 import com.sachin.filemanager.fragments.MainDialogFragment;
 import com.sachin.filemanager.ui.DragSelectTouchListener;
 import com.sachin.filemanager.ui.FileItem;
-import com.sachin.filemanager.utils.AnimationUtils;
+import com.sachin.filemanager.utils.AnimationUtil;
 import com.sachin.filemanager.utils.FileListSorter;
 import com.sachin.filemanager.utils.FileManagerUtils;
-import com.sachin.filemanager.utils.FileUtils;
+import com.sachin.filemanager.utils.FileUtil;
+import com.sachin.filemanager.utils.IconUtil;
 import com.sachin.filemanager.utils.MainActivityHelper;
-import com.sachin.filemanager.utils.SettingsUtils;
-import com.sachin.filemanager.utils.StorageUtils;
+import com.sachin.filemanager.utils.SettingsUtil;
+import com.sachin.filemanager.utils.StorageUtil;
 import com.sachin.filemanager.utils.SystemUtil;
 import com.sachin.filemanager.view.PathLabelView;
+import com.sachin.filemanager.view.TopSnackbar;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends BaseActivity implements KEYS,
-        MainAdapter.OnItemClickListener, MainAdapter.OnItemLongClickListener, ActionMode.Callback,
-        MainAdapter.OnOptionItemClickListener, NavigationView.OnNavigationItemSelectedListener, MainAdapter.OnSelectionChanged
-        , DragSelectTouchListener.OnDragSelectListener {
+public class MainActivity extends BaseActivity implements KEYS, MainAdapter.OnItemClickListener,
+        MainAdapter.OnItemLongClickListener, ActionMode.Callback, MainAdapter.OnOptionItemClickListener,
+        NavigationView.OnNavigationItemSelectedListener, MainAdapter.OnSelectionChanged, DragSelectTouchListener.OnDragSelectListener,
+        BottomNavigationView.OnNavigationItemSelectedListener {
 
     private static final int REQUEST_CODE = 0x11;
     public final String TAG = getClass().getSimpleName();
@@ -76,6 +77,7 @@ public class MainActivity extends BaseActivity implements KEYS,
     private PathLabelView pathLabelView;
     private int sortType;
     private int ascending;
+    private boolean dirOnTop;
     private boolean showHidden;
     // flag to show application icon instead of default
     private boolean showThumbs;
@@ -100,6 +102,7 @@ public class MainActivity extends BaseActivity implements KEYS,
         managerUtils.setSortType(sortType);
         managerUtils.setAscending(ascending);
         managerUtils.setShowHidden(showHidden);
+        managerUtils.showDirectoriesOnTop(dirOnTop);
 
         recyclerView = (RecyclerView) findViewById(R.id.file_list);
         mainAdapter = new MainAdapter(this);
@@ -117,12 +120,13 @@ public class MainActivity extends BaseActivity implements KEYS,
     }
 
     private void initSettings() {
-        showHidden = SettingsUtils.getBoolean(PREFS_HIDDEN, false);
-        rememberPath = SettingsUtils.getBoolean(PREFS_REM_PATH, true);
-        sortType = SettingsUtils.getInt(PREFS_SORT, FileListSorter.SORT_BY_TYPE);
-        ascending = SettingsUtils.getInt(PREFS_SORT_ASCENDING, FileListSorter.SORT_ASCENDING);
-        showThumbs = SettingsUtils.isThumbnailEnabled();
-        rootMode = SettingsUtils.getBoolean(PREFS_ROOT_MODE, false);
+        showHidden = SettingsUtil.getBoolean(PREFS_HIDDEN, false);
+        rememberPath = SettingsUtil.getBoolean(PREFS_REM_PATH, true);
+        sortType = SettingsUtil.getInt(PREFS_SORT, FileListSorter.SORT_BY_TYPE);
+        ascending = SettingsUtil.getInt(PREFS_SORT_ASCENDING, FileListSorter.SORT_ASCENDING);
+        dirOnTop = SettingsUtil.getBoolean(PREFS_DIR_ON_TOP, true);
+        showThumbs = SettingsUtil.isThumbnailEnabled();
+        rootMode = SettingsUtil.getBoolean(PREFS_ROOT_MODE, false);
     }
 
     private void init() {
@@ -166,6 +170,7 @@ public class MainActivity extends BaseActivity implements KEYS,
         mainAdapter.setOnSelectionChanged(this);
         recyclerView.setHasFixedSize(true);
         helper.switchLayout(getViewType());
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
         pathLabelView.setHelper(helper);
         if (isHome())
             pathLabelView.updatePathLabel(managerUtils.getCurrentDirectory(), true, false);
@@ -188,25 +193,25 @@ public class MainActivity extends BaseActivity implements KEYS,
     }
 
     private boolean isHome() {
-        if (getHomeDirectory().equals(StorageUtils.getSdCardPath()) ||
-                getHomeDirectory().equals(StorageUtils.getExtSdCardPaths(this)) ||
-                getHomeDirectory().equals(StorageUtils.getRootPath()))
+        if (getHomeDirectory().equals(StorageUtil.getSdCardPath()) ||
+                getHomeDirectory().equals(StorageUtil.getExtSdCardPaths(this)) ||
+                getHomeDirectory().equals(StorageUtil.getRootPath()))
             return true;
 
         return false;
     }
 
     private String homeType(String main) {
-        if (main.contains(StorageUtils.getSdCardPath()))
-            return StorageUtils.getSdCardPath();
+        if (main.contains(StorageUtil.getSdCardPath()))
+            return StorageUtil.getSdCardPath();
 
-        else if (main.contains(StorageUtils.getExtSdCardPaths(this)))
-            return StorageUtils.getExtSdCardPaths(this);
+        else if (main.contains(StorageUtil.getExtSdCardPaths(this)))
+            return StorageUtil.getExtSdCardPaths(this);
 
-        else if (main.contains(StorageUtils.getRootPath()))
-            return StorageUtils.getRootPath();
+        else if (main.contains(StorageUtil.getRootPath()))
+            return StorageUtil.getRootPath();
         else
-            return StorageUtils.getSdCardPath();
+            return StorageUtil.getSdCardPath();
     }
 
     private void checkAndAskPermissions() {
@@ -224,8 +229,9 @@ public class MainActivity extends BaseActivity implements KEYS,
         MenuItem root = menu.findItem(R.id.nav_root);
         MenuItem primary = menu.findItem(R.id.nav_device);
         MenuItem sdCard = menu.findItem(R.id.nav_sd_card);
+
         try {
-            String extSdCard = StorageUtils.getExtSdCardPaths(this);
+            String extSdCard = StorageUtil.getExtSdCardPaths(this);
             if (extSdCard != null)
                 sdCard.setVisible(true);
 
@@ -238,14 +244,16 @@ public class MainActivity extends BaseActivity implements KEYS,
             e.printStackTrace();
         }
 
-        boolean device = getHomeDirectory().equals(StorageUtils.getSdCardPath());
+        boolean device = getHomeDirectory().equals(StorageUtil.getSdCardPath());
         primary.setChecked(device);
 
-        root.setVisible(getHomeDirectory().equals(StorageUtils.getRootPath()));
+        root.setVisible(rootMode);
+        boolean r = getHomeDirectory().equals(StorageUtil.getRootPath());
+        root.setChecked(r);
     }
 
     private int getViewType() {
-        viewType = SettingsUtils.getInt(PREFS_VIEW_MODE, MainAdapter.LIST_VIEW);
+        viewType = SettingsUtil.getInt(PREFS_VIEW_MODE, MainAdapter.LIST_VIEW);
         return viewType;
     }
 
@@ -273,23 +281,26 @@ public class MainActivity extends BaseActivity implements KEYS,
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.myfiles_options_menu, menu);
 
-        TypedValue typedValue = new TypedValue();
-        getTheme().resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_menu_main, menu);
+
+        int color = IconUtil.getThemeInverseColor(this);
 
         Drawable grid = ContextCompat.getDrawable(this, R.drawable.abc_ic_icon_grid);
         Drawable list = ContextCompat.getDrawable(this, R.drawable.abc_ic_icon_list);
 
-        DrawableCompat.setTint(grid, ContextCompat.getColor(this, typedValue.resourceId));
-        DrawableCompat.setTint(list, ContextCompat.getColor(this, typedValue.resourceId));
+        DrawableCompat.setTint(grid, color);
+        DrawableCompat.setTint(list, color);
 
         menu.findItem(R.id.menu_id_search).setIcon(android.support.v7.appcompat.R.drawable.abc_ic_search_api_material);
         MenuItem item = menu.findItem(R.id.switchLayout);
 
         item.setIcon(mainAdapter.getViewType() == MainAdapter.LIST_VIEW ?
                 grid : list);
+
+        MenuItem dirTop = menu.findItem(R.id.menu_id_dir_on_top);
+        dirTop.setChecked(dirOnTop);
 
         return true;
     }
@@ -313,11 +324,20 @@ public class MainActivity extends BaseActivity implements KEYS,
                 if (mainAdapter.getViewType() == MainAdapter.LIST_VIEW) {
                     helper.switchLayout(MainAdapter.GRID_VIEW);
                     item.setIcon(R.drawable.abc_ic_icon_list);
-                    SettingsUtils.applySettings(PREFS_VIEW_MODE, MainAdapter.GRID_VIEW);
+                    SettingsUtil.applySettings(PREFS_VIEW_MODE, MainAdapter.GRID_VIEW);
                 } else {
                     helper.switchLayout(MainAdapter.LIST_VIEW);
                     item.setIcon(R.drawable.abc_ic_icon_grid);
-                    SettingsUtils.applySettings(PREFS_VIEW_MODE, MainAdapter.LIST_VIEW);
+                    SettingsUtil.applySettings(PREFS_VIEW_MODE, MainAdapter.LIST_VIEW);
+                }
+                return true;
+            case R.id.menu_id_dir_on_top:
+                if (item.isCheckable()) {
+                    boolean checked = item.isChecked();
+                    item.setChecked(!checked);
+                    managerUtils.showDirectoriesOnTop(item.isChecked());
+                    updateUI();
+                    return true;
                 }
         }
         return false;
@@ -325,11 +345,11 @@ public class MainActivity extends BaseActivity implements KEYS,
 
 
     private String getHomeDirectory() {
-        String defaultHome = StorageUtils.getSdCardPath();
+        String defaultHome = StorageUtil.getSdCardPath();
         if (!rememberPath)
             return defaultHome;
 
-        homeDirectory = SettingsUtils.getString(PREFS_HOME, defaultHome);
+        homeDirectory = SettingsUtil.getString(PREFS_HOME, defaultHome);
         return homeDirectory;
     }
 
@@ -337,7 +357,7 @@ public class MainActivity extends BaseActivity implements KEYS,
     protected void onDestroy() {
         super.onDestroy();
         if (rememberPath)
-            SettingsUtils.applySettings(PREFS_HOME, managerUtils.getCurrentDirectory());
+            SettingsUtil.applySettings(PREFS_HOME, managerUtils.getCurrentDirectory());
     }
 
     @Override
@@ -389,7 +409,7 @@ public class MainActivity extends BaseActivity implements KEYS,
                 }
             } else {
                 try {
-                    FileUtils.openFile(this, file);
+                    FileUtil.openFile(this, file);
                 } catch (Exception e) {
                     Snackbar.make(view, "Can't open this file", Snackbar.LENGTH_SHORT).show();
                     e.printStackTrace();
@@ -418,7 +438,7 @@ public class MainActivity extends BaseActivity implements KEYS,
         mode.setTitle(selection);
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.cab_menu, menu);
-        AnimationUtils.animateToToolBar(fab, bottomNavigationView);
+        AnimationUtil.animateToToolBar(fab, bottomNavigationView);
         return true;
     }
 
@@ -436,7 +456,7 @@ public class MainActivity extends BaseActivity implements KEYS,
     public void onDestroyActionMode(android.view.ActionMode mode) {
         mainAdapter.setMultiSelectEnabled(false);
         actionMode = null;
-        AnimationUtils.animateToFAB(fab, bottomNavigationView);
+        AnimationUtil.animateToFAB(fab, bottomNavigationView);
     }
 
     @Override
@@ -446,13 +466,13 @@ public class MainActivity extends BaseActivity implements KEYS,
         switch (id) {
             case R.id.fom_delete:
                 if (SystemUtil.isKitkat()) {
-                    if (FileUtils.isOnExtSdCard(file)) {
-                        if (SettingsUtils.getTreeUri() == null)
+                    if (FileUtil.isOnExtSdCard(file)) {
+                        if (SettingsUtil.getTreeUri() == null)
                             MainDialogFragment.newInstance(MainDialogFragment.SAF_TYPE_DIALOG).show(getSupportFragmentManager(), "");
                         return true;
                     }
                 }
-                if (FileUtils.deleteFile(file)) {
+                if (FileUtil.deleteFile(file)) {
                     mainAdapter.removeItem(position);
                     return true;
                 } else
@@ -480,7 +500,7 @@ public class MainActivity extends BaseActivity implements KEYS,
                 }
             };
 
-            SettingsUtils.applySettings(PREFS_TREE_URI, treeUri.toString());
+            SettingsUtil.applySettings(PREFS_TREE_URI, treeUri.toString());
             getContentResolver().takePersistableUriPermission(treeUri, (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
 
         }
@@ -495,32 +515,58 @@ public class MainActivity extends BaseActivity implements KEYS,
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
         String path;
-        if (id == R.id.nav_sd_card) {
-            path = StorageUtils.getExtSdCardPaths(this);
-            if (!managerUtils.getCurrentDirectory().equals(path)) {
-                helper.updateDirectory(managerUtils.setHomeDirectory(path));
-                pathLabelView.changeVolume(managerUtils.getCurrentDirectory());
-                SettingsUtils.applySettings(PREFS_HOME, path);
-            }
-        } else if (id == R.id.nav_device) {
-            path = StorageUtils.getSdCardPath();
-            if (!managerUtils.getCurrentDirectory().equals(path)) {
-                helper.updateDirectory(managerUtils.setHomeDirectory(path));
-                pathLabelView.changeVolume(managerUtils.getCurrentDirectory());
-                SettingsUtils.applySettings(PREFS_HOME, path);
-            }
-        } else if (id == R.id.nav_root) {
-            path = StorageUtils.getRootPath();
-            if (!managerUtils.getCurrentDirectory().equals(path)) {
-                helper.updateDirectory(managerUtils.setHomeDirectory(path));
-                pathLabelView.changeVolume(managerUtils.getCurrentDirectory());
-                SettingsUtils.applySettings(PREFS_HOME, path);
-            }
+        switch (item.getItemId()) {
+            // Side Navigation first
+            case R.id.nav_device:
+                path = StorageUtil.getSdCardPath();
+                if (!managerUtils.getCurrentDirectory().equals(path)) {
+                    helper.updateDirectory(managerUtils.setHomeDirectory(path));
+                    pathLabelView.changeVolume(managerUtils.getCurrentDirectory());
+                    SettingsUtil.applySettings(PREFS_HOME, path);
+                }
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            case R.id.nav_sd_card:
+                path = StorageUtil.getExtSdCardPaths(this);
+                if (!managerUtils.getCurrentDirectory().equals(path)) {
+                    helper.updateDirectory(managerUtils.setHomeDirectory(path));
+                    pathLabelView.changeVolume(managerUtils.getCurrentDirectory());
+                    SettingsUtil.applySettings(PREFS_HOME, path);
+                }
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            case R.id.nav_root:
+                path = StorageUtil.getRootPath();
+                if (!managerUtils.getCurrentDirectory().equals(path)) {
+                    helper.updateDirectory(managerUtils.setHomeDirectory(path));
+                    pathLabelView.changeVolume(managerUtils.getCurrentDirectory());
+                    SettingsUtil.applySettings(PREFS_HOME, path);
+                }
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+
+            //Here comes the bottom navigation
+            case R.id.menu_create_folder:
+                MainDialogFragment dialogFragment = MainDialogFragment.newInstance(MainDialogFragment.CREATE_FOLDER_DIALOG);
+                helper.showDialog(dialogFragment);
+                return true;
+
+            case R.id.menu_copy:
+                if (actionMode != null) {
+                    if (mainAdapter.hasMultiSelectData()) {
+                        actionMode.finish();
+                        showDSnackView(mainAdapter.getSelectedItemsCount() + " items ready to be copied");
+                    } else {
+                        Snackbar.make(recyclerView, "No items selected", Snackbar.LENGTH_SHORT).show();
+                    }
+                }
+                return true;
+
         }
 
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
     }
 
     @Override
@@ -532,5 +578,16 @@ public class MainActivity extends BaseActivity implements KEYS,
     @Override
     public void onSelectChange(int start, int end, boolean isSelected) {
         mainAdapter.selectRange(start, end, isSelected);
+    }
+
+    public void showDSnackView(String message) {
+        Snackbar snackbar = TopSnackbar.makeView(recyclerView,message,Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("Cancel", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainAdapter.setMultiSelectEnabled(false, true);
+            }
+        });
+        snackbar.show();
     }
 }

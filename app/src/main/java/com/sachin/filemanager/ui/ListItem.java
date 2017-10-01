@@ -1,10 +1,10 @@
-package com.sachin.filemanager.adapters;
+package com.sachin.filemanager.ui;
 
-public class Model {
+public class ListItem {
     private String heading;
     private String content;
 
-    public Model(String heading, String content) {
+    public ListItem(String heading, String content) {
         this.heading = heading;
         this.content = content;
     }

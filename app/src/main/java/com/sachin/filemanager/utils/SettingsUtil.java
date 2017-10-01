@@ -7,12 +7,12 @@ import android.preference.PreferenceManager;
 import com.sachin.filemanager.FileManagerApplication;
 import com.sachin.filemanager.constants.KEYS;
 
-public class SettingsUtils implements KEYS {
+public class SettingsUtil implements KEYS {
 
     private static SharedPreferences preferences;
     private static SharedPreferences.Editor editor;
 
-    private SettingsUtils() {
+    private SettingsUtil() {
         throw new UnsupportedOperationException();
     }
 

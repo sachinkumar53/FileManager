@@ -21,7 +21,9 @@
             android:layout_marginRight="4.0dp"
             android:layout_marginTop="2.0dp"
             android:clickable="false"
-            app:color_checked="?attr/colorAccent" />
+            app:color_checked="?attr/colorAccent"
+            app:color_tick="?android:textColorPrimary"
+            app:color_unchecked="?android:textColorPrimary" />
 
         <ImageView
             android:id="@+id/row_image"

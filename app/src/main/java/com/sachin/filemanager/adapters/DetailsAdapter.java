@@ -8,27 +8,28 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.sachin.filemanager.R;
+import com.sachin.filemanager.ui.ListItem;
 
 import java.util.List;
 
 
-public class DetailsAdapter extends ArrayAdapter<Model> {
-    private List<Model> modelList;
+public class DetailsAdapter extends ArrayAdapter<ListItem> {
+    private List<ListItem> listItemList;
 
-    public DetailsAdapter(Context context, int resource, List<Model> models) {
-        super(context, resource, models);
-        modelList = models;
+    public DetailsAdapter(Context context, int resource, List<ListItem> listItems) {
+        super(context, resource, listItems);
+        listItemList = listItems;
     }
 
 
     @Override
-    public Model getItem(int position) {
-        return modelList.get(position);
+    public ListItem getItem(int position) {
+        return listItemList.get(position);
     }
 
     @Override
     public int getCount() {
-        return modelList.size();
+        return listItemList.size();
     }
 
     @Override

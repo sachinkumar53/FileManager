@@ -19,10 +19,9 @@ import android.widget.Toast;
 
 import com.sachin.filemanager.R;
 import com.sachin.filemanager.utils.FileManagerUtils;
-import com.sachin.filemanager.utils.FileUtils;
+import com.sachin.filemanager.utils.FileUtil;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TestActivity extends AppCompatActivity {
@@ -132,7 +131,7 @@ public class TestActivity extends AppCompatActivity {
             }
             File file = new File(fileManagerUtils.getCurrentDirectory(), list.get(position));
             vh.title.setText(file.getName());
-            vh.summary.setText(FileUtils.calculateSize(file));
+            vh.summary.setText(FileUtil.calculateSize(file));
             return convertView;
         }
     }

@@ -1,7 +1,6 @@
 package com.sachin.filemanager.view;
 
 import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
@@ -14,16 +13,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.sachin.filemanager.R;
-import com.sachin.filemanager.utils.AnimationUtils;
-import com.sachin.filemanager.utils.IconUtils;
+import com.sachin.filemanager.utils.AnimationUtil;
+import com.sachin.filemanager.utils.IconUtil;
 
 public class TextImage extends LinearLayout {
+    int size = 15;
+    int color;
     private ImageView imageView;
     private TextView textView;
     private boolean icon;
     private String text;
-    int size = 15;
-    int color;
 
     public TextImage(Context context) {
         super(context);
@@ -40,7 +39,7 @@ public class TextImage extends LinearLayout {
     }
 
     private void init(Context context) {
-        color = IconUtils.getAccentColor();
+        color = IconUtil.getAccentColor();
         imageView = new ImageView(context);
         textView = new TextView(context);
         textView.setTextSize(size);
@@ -56,7 +55,7 @@ public class TextImage extends LinearLayout {
         if (!icon)
             imageView.setVisibility(GONE);
 
-        AnimationUtils.animatePath(textView,imageView,true);
+        AnimationUtil.animatePath(textView,imageView,true);
     }
 
     public void setIcon(boolean icon) {
@@ -72,17 +71,17 @@ public class TextImage extends LinearLayout {
         this.textView.setTextSize(size);
     }
 
+    public String getText() {
+        return text;
+    }
+
     public void setText(String text) {
         this.text = text;
         this.textView.setText(text);
     }
 
-    public String getText() {
-        return text;
-    }
-
     public void goBack(final ViewGroup group) {
-        AnimationUtils.animatePath(textView,imageView,false).addListener(new Animator.AnimatorListener() {
+        AnimationUtil.animatePath(textView,imageView,false).addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
 

@@ -10,9 +10,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class StorageUtils {
+public class StorageUtil {
 
-    private static final String TAG = "StorageUtils";
+    private static final String TAG = "StorageUtil";
 
     private static final String PRIMARY_VOLUME_NAME = "primary";
     private static final String SECONDARY_VOLUME_NAME = "external";

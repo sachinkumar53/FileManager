@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/switchLayout"
+        android:icon="@drawable/abc_ic_icon_grid"
+        android:title="Switch Layout"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/menu_id_search"
+        android:title="@string/menu_search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="always|collapseActionView"/>
+
+    <item android:id="@+id/menu_id_settings"
+        android:title="@string/menu_settings"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/menu_id_sort"
+        android:title="@string/menu_sort_type"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/menu_id_dir_on_top"
+        android:checkable="true"
+        android:checked="true"
+        android:title="Directories on top"/>
+
+    <item
+        android:id="@+id/menu_id_quit"
+        android:title="Exit"
+        app:showAsAction="never"/>
+
+</menu>

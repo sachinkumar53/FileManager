@@ -2,22 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:checked="true"
+        android:id="@+id/menu_create_folder"
         android:icon="@drawable/ic_add_folder"
         android:title="Create folder" />
 
     <item
-        android:checked="true"
-        android:icon="@android:drawable/ic_menu_add"
-        android:title="Add" />
+        android:id="@+id/menu_copy"
+        android:icon="@drawable/ic_action_copy"
+        android:title="Copy" />
 
     <item
-        android:checked="true"
-        android:icon="@android:drawable/ic_menu_camera"
+        android:id="@+id/menu_move"
+        android:icon="@android:drawable/ic_menu_crop"
         android:title="Camera" />
 
     <item
-        android:checked="true"
+        android:id="@+id/menu_delete"
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="Delete" />
 </menu>

@@ -14,8 +14,8 @@ import android.widget.Toast;
 
 import com.sachin.filemanager.R;
 import com.sachin.filemanager.adapters.DetailsAdapter;
-import com.sachin.filemanager.adapters.Model;
-import com.sachin.filemanager.utils.FileUtils;
+import com.sachin.filemanager.ui.ListItem;
+import com.sachin.filemanager.utils.FileUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,9 +48,9 @@ public class DetailsDialogFragment extends DialogFragment implements DialogInter
 
         ListView listView = (ListView) view.findViewById(R.id.details_lv);
 
-        List<Model> models = getList(file);
+        List<ListItem> listItems = getList(file);
 
-        adapter = new DetailsAdapter(getActivity(), R.layout.list_item_layout, models);
+        adapter = new DetailsAdapter(getActivity(), R.layout.list_item_layout, listItems);
         listView.setAdapter(adapter);
         listView.setOnItemLongClickListener(this);
         return builder.create();
@@ -61,23 +61,23 @@ public class DetailsDialogFragment extends DialogFragment implements DialogInter
         dismiss();
     }
 
-    public List<Model> getList(File file) {
-        List<Model> models = new ArrayList<>();
+    public List<ListItem> getList(File file) {
+        List<ListItem> listItems = new ArrayList<>();
 
-        models.add(new Model("Name", file.getName()));
-        models.add(new Model("Path", file.getAbsolutePath()));
-        models.add(new Model("Size", FileUtils.calculateSize(file)));
-        models.add(new Model("Date modified", FileUtils.getLastModified(file)));
-        return models;
+        listItems.add(new ListItem("Name", file.getName()));
+        listItems.add(new ListItem("Path", file.getAbsolutePath()));
+        listItems.add(new ListItem("Size", FileUtil.calculateSize(file)));
+        listItems.add(new ListItem("Date modified", FileUtil.getLastModified(file)));
+        return listItems;
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(CLIPBOARD_SERVICE);
-        Model model = adapter.getItem(position);
-        ClipData clip = ClipData.newPlainText(model.getHeading(), model.getContent());
+        ListItem listItem = adapter.getItem(position);
+        ClipData clip = ClipData.newPlainText(listItem.getHeading(), listItem.getContent());
         clipboard.setPrimaryClip(clip);
-        Toast.makeText(getActivity(), model.getHeading() + " copied to clipboard", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), listItem.getHeading() + " copied to clipboard", Toast.LENGTH_SHORT).show();
         return true;
     }
 }

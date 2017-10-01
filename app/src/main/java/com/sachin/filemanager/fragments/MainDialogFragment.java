@@ -19,7 +19,7 @@ import com.sachin.filemanager.R;
 import com.sachin.filemanager.activities.MainActivity;
 import com.sachin.filemanager.utils.FileListSorter;
 import com.sachin.filemanager.utils.FileManagerUtils;
-import com.sachin.filemanager.utils.FileUtils;
+import com.sachin.filemanager.utils.FileUtil;
 import com.sachin.filemanager.utils.MainActivityHelper;
 
 import java.io.File;
@@ -134,7 +134,7 @@ public class MainDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 File target = new File(managerUtils.getCurrentDirectory(), editText.getText().toString());
                 //boolean result = managerUtils.createDir(managerUtils.getCurrentDirectory(), editText.getText().toString());
-                boolean result = FileUtils.mkdir(target);
+                boolean result = FileUtil.mkdir(target);
                 MainActivityHelper helper = ((MainActivity) getActivity()).getHelper();
                 View snackView = helper.getRecyclerView();
                 if (result) {
@@ -168,7 +168,7 @@ public class MainDialogFragment extends DialogFragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                boolean valid = FileUtils.isValidName(s.toString());
+                boolean valid = FileUtil.isValidName(s.toString());
                 Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 boolean enabled = positive.isEnabled();
 

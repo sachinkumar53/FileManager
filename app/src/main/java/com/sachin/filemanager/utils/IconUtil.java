@@ -7,12 +7,14 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 
 import com.sachin.filemanager.FileManagerApplication;
 import com.sachin.filemanager.ui.ThemeUtils;
 
-public class IconUtils {
+public class IconUtil {
+    private static final Context context = FileManagerApplication.getAppContext();
 
     public static int getAccentColor() {
         return ThemeUtils.getInstance().getTheme().getColorAccent();
@@ -40,13 +42,27 @@ public class IconUtils {
         return inSampleSize;
     }
 
+    public static int getThemeInverseColor(Context context) {
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(
+                android.R.attr.textColorPrimary, typedValue, true);
+        int color = ContextCompat.getColor(context, typedValue.resourceId);
+        return color;
+    }
+
+    public static int getAttrColor(Context context) {
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(
+                android.R.attr.windowBackground, typedValue, true);
+        int color = ContextCompat.getColor(context, typedValue.resourceId);
+        return color;
+    }
+
     public static Rect getRect(int size) {
         return new Rect(size, size, size, size);
     }
 
     public static Drawable getResizedDrawable(int resId, int iconWidth, int iconHeight) {
-        Context context = FileManagerApplication.getAppContext();
-
         Bitmap BitmapOrg = BitmapFactory.decodeResource(context.getResources(),
                 resId);
 
@@ -69,14 +85,12 @@ public class IconUtils {
     }
 
     public static int dpToPx(int dpValue) {
-        Context c = FileManagerApplication.getAppContext();
-        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, c.getResources().getDisplayMetrics());
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, context.getResources().getDisplayMetrics());
         return (int) px;
     }
 
     public static int pxToDp(int pxValue) {
-        Context c = FileManagerApplication.getAppContext();
-        float dp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, pxValue, c.getResources().getDisplayMetrics());
+        float dp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, pxValue, context.getResources().getDisplayMetrics());
         return (int) dp;
     }
 }

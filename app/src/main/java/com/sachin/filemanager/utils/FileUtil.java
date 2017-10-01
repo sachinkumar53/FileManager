@@ -43,17 +43,50 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class FileUtils {
-
-    private static String TAG = "FileUtils";
+public class FileUtil {
 
     private static final String PRIMARY_VOLUME_NAME = "primary";
+    private final static int doDelete = 0;
+    private final static int doCopy = 1;
+    private final static int doMove = 2;
+    private final static int doZip = 3;
+    private final static int doUnZip = 4;
+    public static String TYPE_VIDEO = "vid";
+    public static String TYPE_AUDIO = "aud";
+    public static String TYPE_IMAGE = "img";
+    public static String TYPE_PDF = "pdf";
+    public static String TYPE_APK = "apk";
+    public static String TYPE_ARCHIVE = "zip";
+    public static String TYPE_TEXT = "txt";
 
+    // Utility methods for Android 5
+    public static String TYPE_PPT = "ppt";
+    public static String TYPE_HTML = "htm";
+    public static String TYPE_CONFIG = "con";
+    public static String TYPE_JAR = "jar";
+    public static String TYPE_XML = "xml";
+    public static String TYPE_XLS = "xls";
+    public static String TYPE_DOCUMENT = "doc";
+    public static String TYPE_CONTACT = "vcf";
+    private static String TAG = "FileUtil";
+    private static int KB = 1024;
+    private static int MB = KB * KB;
+
+    // Utility methods for Kitkat
+    private static int GB = MB * KB;
+    private Context context;
+    private FileManager manager;
+    private FileListAdapter adapter;
     /**
      * Hide default constructor.
      */
-    private FileUtils() {
+    private FileUtil() {
         throw new UnsupportedOperationException();
+    }
+    public FileUtil(Context c, FileListAdapter fileListAdapter, FileManager fileManager) {
+        context = c;
+        manager = fileManager;
+        adapter = fileListAdapter;
     }
 
     /**
@@ -320,7 +353,7 @@ public class FileUtils {
                 Log.e(TAG, "Could not open file", e);
                 return false;
             } finally {
-                FileUtils.deleteFile(tempFile);
+                FileUtil.deleteFile(tempFile);
             }
 
             return true;
@@ -388,7 +421,7 @@ public class FileUtils {
             for (String child : children) {
                 File file = new File(folder, child);
                 if (!file.isDirectory()) {
-                    boolean success = FileUtils.deleteFile(file);
+                    boolean success = FileUtil.deleteFile(file);
                     if (!success) {
                         Log.w(TAG, "Failed to delete file" + child);
                         totalSuccess = false;
@@ -411,7 +444,7 @@ public class FileUtils {
             @Override
             public void run() {
                 int retryCounter = 5; // MAGIC_NUMBER
-                while (!FileUtils.rmdir(file) && retryCounter > 0) {
+                while (!FileUtil.rmdir(file) && retryCounter > 0) {
                     try {
                         Thread.sleep(100); // MAGIC_NUMBER
                     } catch (InterruptedException e) {
@@ -459,8 +492,6 @@ public class FileUtils {
 
         return result;
     }
-
-    // Utility methods for Android 5
 
     /**
      * Check for a directory if it is possible to create files within this directory, either via normal writing or via
@@ -617,7 +648,7 @@ public class FileUtils {
     private static DocumentFile getDocumentFile(@NonNull final File file, final boolean isDirectory,
                                                 final boolean createDirectories) {
 
-        Uri treeUri = SettingsUtils.getTreeUri();
+        Uri treeUri = SettingsUtil.getTreeUri();
 
         String fullPath;
         try {
@@ -684,7 +715,7 @@ public class FileUtils {
         if (treeUri == null) {
             return null;
         }
-        String volumePath = FileUtils.getVolumePath(FileUtils.getVolumeIdFromTreeUri(treeUri));
+        String volumePath = FileUtil.getVolumePath(FileUtil.getVolumeIdFromTreeUri(treeUri));
         if (volumePath == null) {
             return File.separator;
         }
@@ -692,7 +723,7 @@ public class FileUtils {
             volumePath = volumePath.substring(0, volumePath.length() - 1);
         }
 
-        String documentPath = FileUtils.getDocumentPathFromTreeUri(treeUri);
+        String documentPath = FileUtil.getDocumentPathFromTreeUri(treeUri);
         if (documentPath.endsWith(File.separator)) {
             documentPath = documentPath.substring(0, documentPath.length() - 1);
         }
@@ -792,8 +823,6 @@ public class FileUtils {
         }
     }
 
-    // Utility methods for Kitkat
-
     /**
      * Copy a resource file into a private target directory, if the target does not yet exist. Required for the Kitkat
      * workaround.
@@ -843,7 +872,6 @@ public class FileUtils {
         return targetFile;
     }
 
-
     @Nullable
     public static String getFullPathFromTreeUri(Context context, @Nullable final Uri treeUri) {
         if (treeUri == null) {
@@ -872,7 +900,6 @@ public class FileUtils {
             return volumePath;
         }
     }
-
 
     private static String getVolumePath(final String volumeId, Context con) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -915,27 +942,6 @@ public class FileUtils {
         } catch (Exception ex) {
             return null;
         }
-    }
-
-
-    private static int KB = 1024;
-    private static int MB = KB * KB;
-    private static int GB = MB * KB;
-
-    private final static int doDelete = 0;
-    private final static int doCopy = 1;
-    private final static int doMove = 2;
-    private final static int doZip = 3;
-    private final static int doUnZip = 4;
-
-    private Context context;
-    private FileManager manager;
-    private FileListAdapter adapter;
-
-    public FileUtils(Context c, FileListAdapter fileListAdapter, FileManager fileManager) {
-        context = c;
-        manager = fileManager;
-        adapter = fileListAdapter;
     }
 
     public static String calculateSize(File file) {
@@ -1003,22 +1009,6 @@ public class FileUtils {
             }
         }
     }
-
-    public static String TYPE_VIDEO = "vid";
-    public static String TYPE_AUDIO = "aud";
-    public static String TYPE_IMAGE = "img";
-    public static String TYPE_PDF = "pdf";
-    public static String TYPE_APK = "apk";
-    public static String TYPE_ARCHIVE = "zip";
-    public static String TYPE_TEXT = "txt";
-    public static String TYPE_PPT = "ppt";
-    public static String TYPE_HTML = "htm";
-    public static String TYPE_CONFIG = "con";
-    public static String TYPE_JAR = "jar";
-    public static String TYPE_XML = "xml";
-    public static String TYPE_XLS = "xls";
-    public static String TYPE_DOCUMENT = "doc";
-    public static String TYPE_CONTACT = "vcf";
 
     public static String identify(String extension) {
         String ext = extension.toLowerCase();

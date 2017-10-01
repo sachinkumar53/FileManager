@@ -15,11 +15,13 @@ import io.codetail.animation.ViewAnimationUtils;
 
 import static android.view.View.TRANSLATION_X;
 
-public class AnimationUtils {
+public class AnimationUtil {
 
     private static boolean toolbarVisible = false;
 
     public static void animateToToolBar(final View fab, final View toolbar) {
+        if (isToolbarVisible())
+            return;
 
         final int cx = toolbar.getWidth() / 2;
         final int cy = toolbar.getHeight() / 2;
@@ -29,7 +31,7 @@ public class AnimationUtils {
         final float endRadius = (float) Math.hypot(cx, cy);
 
         int x = (-cx + 100);
-        int y = 75;
+        int y = 60;
 
         fab.animate().translationX(x).translationY(y).setInterpolator(new AccelerateInterpolator()).
                 setListener(new Animator.AnimatorListener() {
@@ -66,6 +68,8 @@ public class AnimationUtils {
     }
 
     public static void animateToFAB(final View fab, final View toolbar) {
+        if (!isToolbarVisible())
+            return;
 
         final int cx = toolbar.getWidth() / 2;
         final int cy = toolbar.getHeight() / 2;
