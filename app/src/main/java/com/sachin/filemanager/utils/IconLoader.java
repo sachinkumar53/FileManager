@@ -102,7 +102,7 @@ public class IconLoader extends Thread {
                         }
                     });
                 } else if (isApkFile(file)) {
-                    bitmap = Icons.getAPKIconBitmap(file);
+                    bitmap = Icons.getAPKIcon(file);
                     mIcon = new SoftReference<>(bitmap);
                     fileItem.setIcon(mIcon.get());
                     mCacheMap.put(file.getPath(), mIcon.get());

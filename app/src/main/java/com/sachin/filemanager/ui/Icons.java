@@ -15,12 +15,9 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
-import android.os.Build;
 import android.provider.MediaStore;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.sachin.filemanager.FileManagerApplication;
@@ -70,7 +67,7 @@ public class Icons {
         ColorFilter colorFilter = new PorterDuffColorFilter(accent, PorterDuff.Mode.SRC_IN);
         paint.setColorFilter(colorFilter);
 
-        Bitmap bitmap = Bitmap.createBitmap(size,size, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
         Bitmap folder = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),
                 R.drawable.icon_folder), size, size, true);
 
@@ -89,10 +86,17 @@ public class Icons {
     }
 
     public static Bitmap getFileIcon(File file) {
-        String extension = MimeTypes.getExtension(file.getName());
+
+        String extension = "";
+
+        if (file != null)
+            extension = MimeTypes.getExtension(file.getName());
+
+        if (iconCache == null)
+            iconCache = new HashMap<>();
 
         if (iconCache.containsKey(extension)) {
-            Log.w("ICONS"," Cache has value. returned successfully");
+            Log.w("ICONS", " Cache has value. returned successfully");
             return iconCache.get(extension);
         }
 
@@ -120,37 +124,36 @@ public class Icons {
 
         canvas.drawBitmap(icon, mini, mini, paint);
 
-        iconCache.put(extension,circle);
-        Log.w("ICONS"," Cache was null. Added successfully");
+        iconCache.put(extension, circle);
+        Log.w("ICONS", " Cache was null. Added successfully");
         return circle;
     }
 
-    public static Drawable getAPKIcon(File apkFile) {
-        Drawable appIcon = null;
-        File file = apkFile;
-        String sourcePath = file.getPath();
-        if (sourcePath.endsWith(".apk")) {
-            PackageInfo packageInfo = context.getPackageManager()
-                    .getPackageArchiveInfo(sourcePath, PackageManager.GET_ACTIVITIES);
-            if (packageInfo != null) {
+    public static Bitmap getAPKIcon(File apkFile) {
+        try {
+            File file = apkFile;
+            String sourcePath = file.getPath();
+            if (sourcePath.endsWith(".apk")) {
+                PackageManager pm = context.getPackageManager();
+                PackageInfo packageInfo = pm.getPackageArchiveInfo(sourcePath, PackageManager.GET_ACTIVITIES);
                 ApplicationInfo appInfo = packageInfo.applicationInfo;
-                if (Build.VERSION.SDK_INT >= 8) {
-                    appInfo.sourceDir = sourcePath;
-                    appInfo.publicSourceDir = sourcePath;
-                }
-                Drawable icon = appInfo.loadIcon(context.getPackageManager());
-                appIcon = icon;
+                appInfo.sourceDir = sourcePath;
+                appInfo.publicSourceDir = sourcePath;
+                Drawable icon = appInfo.loadIcon(pm);
+                //convert drawable to bitmap
+                Bitmap bitmap = Bitmap.createBitmap(icon.getIntrinsicWidth(), icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                icon.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                icon.draw(canvas);
+                return bitmap;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), android.R.drawable.sym_def_app_icon);
+            return bitmap;
         }
 
-        if (appIcon == null)
-            appIcon = ContextCompat.getDrawable(context, android.R.drawable.sym_def_app_icon);
-
-        return appIcon;
-    }
-
-    public static Bitmap getAPKIconBitmap(File file) {
-        return ((BitmapDrawable) getAPKIcon(file)).getBitmap();
+        return null;
     }
 
     public static Bitmap decodeSampleBitmapFromFile(File file) {
